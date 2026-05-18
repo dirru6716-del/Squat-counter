@@ -34,7 +34,6 @@
     position: relative;
   }
 
-  /* Background grid */
   body::before {
     content: '';
     position: fixed;
@@ -46,7 +45,6 @@
     pointer-events: none;
   }
 
-  /* Radial glow behind counter */
   body::after {
     content: '';
     position: fixed;
@@ -57,10 +55,8 @@
     height: 320px;
     background: radial-gradient(circle, rgba(200,245,66,0.12) 0%, transparent 70%);
     pointer-events: none;
-    transition: opacity 0.3s;
   }
 
-  /* ── Header ── */
   .header {
     text-align: center;
     z-index: 1;
@@ -80,7 +76,6 @@
     text-transform: uppercase;
   }
 
-  /* ── Main counter area ── */
   .main {
     display: flex;
     flex-direction: column;
@@ -89,7 +84,6 @@
     z-index: 1;
   }
 
-  /* Circular ring */
   .ring-wrap {
     position: relative;
     width: 220px;
@@ -115,7 +109,6 @@
     transition: stroke-dashoffset 0.5s cubic-bezier(.4,0,.2,1);
     filter: drop-shadow(0 0 6px var(--accent));
   }
-
   .ring-inner {
     position: absolute;
     inset: 0;
@@ -130,7 +123,6 @@
     line-height: 1;
     color: var(--text);
     letter-spacing: -2px;
-    transition: transform 0.15s cubic-bezier(.4,0,.2,1);
     text-shadow: 0 0 30px rgba(200,245,66,0.3);
   }
   .count-label {
@@ -140,7 +132,6 @@
     text-transform: uppercase;
   }
 
-  /* Pulse animation on count */
   @keyframes pulse-count {
     0%   { transform: scale(1); }
     40%  { transform: scale(1.18); }
@@ -150,7 +141,69 @@
     animation: pulse-count 0.35s ease;
   }
 
-  /* ── Phase indicator ── */
+  /* 加速度視覺化 bar */
+  .accel-bar-wrap {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  .accel-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+  .accel-track {
+    width: 14px;
+    height: 120px;
+    background: var(--surface);
+    border-radius: 7px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #222235;
+  }
+  /* 中線（水平） */
+  .accel-track::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: #333350;
+  }
+  /* 上方標籤 ↑ */
+  .accel-track::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+  }
+  .accel-fill {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    border-radius: 7px;
+    transition: height 0.04s, top 0.04s, background 0.1s;
+  }
+  .accel-arrows {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 120px;
+    font-size: 10px;
+    color: var(--muted);
+    gap: 0;
+  }
+
   .phase-bar {
     display: flex;
     gap: 8px;
@@ -176,7 +229,6 @@
     text-align: center;
   }
 
-  /* ── Status bar ── */
   .status-row {
     display: flex;
     align-items: center;
@@ -213,7 +265,6 @@
     text-transform: uppercase;
   }
 
-  /* ── Stats row ── */
   .stats {
     display: flex;
     gap: 24px;
@@ -242,7 +293,6 @@
     margin-top: 2px;
   }
 
-  /* ── Reset button ── */
   .btn-reset {
     z-index: 1;
     background: transparent;
@@ -266,7 +316,6 @@
     box-shadow: 0 0 16px rgba(255,77,109,0.2);
   }
 
-  /* Flash overlay on squat count */
   .flash {
     position: fixed;
     inset: 0;
@@ -283,7 +332,7 @@
 
 <div class="header">
   <h1>深蹲計數器</h1>
-  <p>Squat Counter · Gyroscope</p>
+  <p>Squat Counter · Accelerometer</p>
 </div>
 
 <div class="main">
@@ -296,6 +345,18 @@
       <div class="count-display" id="count">0</div>
       <div class="count-label">次</div>
     </div>
+  </div>
+
+  <!-- 加速度視覺化（垂直） -->
+  <div class="accel-bar-wrap">
+    <div class="accel-arrows">
+      <span style="color:var(--accent)">↑</span>
+      <span style="color:var(--danger)">↓</span>
+    </div>
+    <div class="accel-track">
+      <div class="accel-fill" id="accel-fill"></div>
+    </div>
+    <div class="accel-label">加速度</div>
   </div>
 
   <div class="phase-bar">
@@ -326,21 +387,41 @@
 <div class="flash" id="flash"></div>
 
 <script>
-  // ── State ──────────────────────────────────────────────
-  let count = 0;
-  let best  = parseInt(localStorage.getItem('squat_best') || '0');
+  // ── State ──────────────────────────────────────────────────────────────────
+  let count   = 0;
+  let best    = parseInt(localStorage.getItem('squat_best') || '0');
   let session = 0;
 
-  // Squat detection state machine
-  // phase: 'idle' → 'down' → 'up' → (count++) → 'idle'
-  const THRESHOLD_DOWN = 12;   // deg, beta tilt to detect squat down
-  const THRESHOLD_UP   = 4;    // deg, back to near-upright
-  const COOLDOWN_MS    = 600;  // ms between counts
+  // ── 偵測原理 ────────────────────────────────────────────────────────────────
+  //
+  //  使用 DeviceMotion 的 accelerationIncludingGravity（含重力加速度）
+  //  用低通濾波器 (Low-pass filter) 分離出「重力向量」
+  //  動態加速度 = 原始 - 重力
+  //
+  //  深蹲特徵（手機任意放置皆適用）：
+  //    起立中段：身體快速上升 → 沿重力方向出現明顯向上動態加速度（正峰值）
+  //    起立完成：靜止 → 動態加速度歸零
+  //
+  //  狀態機：
+  //    idle → (起立加速超過閾值) → rising → (回到靜止) → 計數+1 → idle
+  //
+  //  這樣設計的好處：
+  //    ✅ 手機放口袋、腰帶、手持都可以
+  //    ✅ 放桌上不會誤觸（沒有起立動作就不會觸發 rising）
+  //    ✅ 不依賴手機角度
 
-  let phase = 'idle'; // 'idle' | 'down' | 'up'
-  let lastCountTime = 0;
+  const LP = 0.85;              // 低通濾波係數
+  const RISE_THRESHOLD  = 4.0;  // m/s² 起立動態加速度閾值
+  const STILL_THRESHOLD = 1.5;  // m/s² 靜止判定閾值
+  const COOLDOWN_MS     = 1000; // 計數後冷卻 ms
 
-  // ── DOM refs ──────────────────────────────────────────
+  let gravX = 0, gravY = 0, gravZ = 0;
+  let phase   = 'idle';   // 'idle' | 'rising'
+  let locked  = false;
+  let warmup  = 0;
+  const WARMUP_FRAMES = 25;
+
+  // ── DOM ────────────────────────────────────────────────────────────────────
   const countEl    = document.getElementById('count');
   const ringEl     = document.getElementById('ring');
   const phaseText  = document.getElementById('phase-text');
@@ -351,167 +432,179 @@
   const bestEl     = document.getElementById('best');
   const sessionEl  = document.getElementById('session');
   const flashEl    = document.getElementById('flash');
+  const accelFill  = document.getElementById('accel-fill');
 
-  // ── Init display ──────────────────────────────────────
   bestEl.textContent = best;
 
-  // ── Ring progress (resets every 10) ───────────────────
+  // ── Ring ───────────────────────────────────────────────────────────────────
   function updateRing() {
-    const pct = (count % 10) / 10;
-    const circumference = 628;
-    ringEl.style.strokeDashoffset = circumference * (1 - pct);
+    ringEl.style.strokeDashoffset = 628 * (1 - (count % 10) / 10);
   }
 
-  // ── Flash ─────────────────────────────────────────────
+  // ── Flash ──────────────────────────────────────────────────────────────────
   function flashScreen() {
     flashEl.classList.add('show');
     setTimeout(() => flashEl.classList.remove('show'), 120);
   }
 
-  // ── Count up ──────────────────────────────────────────
+  // ── Count ──────────────────────────────────────────────────────────────────
   function addCount() {
-    const now = Date.now();
-    if (now - lastCountTime < COOLDOWN_MS) return;
-    lastCountTime = now;
-
-    count++;
-    session++;
+    count++; session++;
     if (count > best) {
       best = count;
       localStorage.setItem('squat_best', best);
       bestEl.textContent = best;
     }
-
-    countEl.textContent = count;
+    countEl.textContent  = count;
     sessionEl.textContent = session;
     updateRing();
     flashScreen();
-
     countEl.classList.remove('pop');
-    void countEl.offsetWidth; // reflow
+    void countEl.offsetWidth;
     countEl.classList.add('pop');
   }
 
-  // ── Phase UI ──────────────────────────────────────────
+  // ── Phase UI ───────────────────────────────────────────────────────────────
   function setPhaseUI(p) {
-    dotDown.classList.toggle('active', p === 'down');
-    dotUp.classList.toggle('active',   p === 'up');
-    if      (p === 'down') phaseText.textContent = '↓ 蹲下';
-    else if (p === 'up')   phaseText.textContent = '↑ 起立';
-    else                   phaseText.textContent = '等待動作';
+    dotDown.classList.toggle('active', p === 'rising');
+    dotUp.classList.toggle('active',   p === 'done');
+    if      (p === 'rising') phaseText.textContent = '↑ 起立中';
+    else if (p === 'done')   phaseText.textContent = '✓ 完成';
+    else                     phaseText.textContent = '等待動作';
   }
 
-  // ── Gyroscope handler ─────────────────────────────────
-  // beta  = front-back tilt (-180~180). When you squat, phone tilts forward → beta increases.
-  // We use absolute beta change from standing baseline.
-  let baseline = null;
-  let baselineSet = false;
-  let betaSamples = [];
-  const CALIBRATE_FRAMES = 30;
+  // ── 加速度視覺化（垂直）────────────────────────────────────────────────────
+  function updateAccelBar(val) {
+    // val 正=向上(起立)，負=向下(蹲下)
+    // track 高度 120px，中點 = 50%
+    // 向上 → fill 從中點往上長（top 往上移）
+    // 向下 → fill 從中點往下長（top = 50%）
+    const pct = Math.min(Math.abs(val) / 12, 1) * 50; // 最多佔50%高度
+    if (val >= 0) {
+      // 向上：fill 從 (50-pct)% 開始，高度 pct%
+      accelFill.style.top        = (50 - pct) + '%';
+      accelFill.style.height     = pct + '%';
+      accelFill.style.background = 'var(--accent)';
+    } else {
+      // 向下：fill 從 50% 開始，往下延伸 pct%
+      accelFill.style.top        = '50%';
+      accelFill.style.height     = pct + '%';
+      accelFill.style.background = 'var(--danger)';
+    }
+  }
 
-  function handleOrientation(e) {
-    // Gracefully handle null values
-    if (e.beta === null) return;
+  // ── DeviceMotion 主邏輯 ─────────────────────────────────────────────────────
+  function handleMotion(e) {
+    const acc = e.accelerationIncludingGravity;
+    if (!acc || acc.x === null) return;
 
-    const beta = e.beta;
+    // 低通濾波估計重力
+    gravX = LP * gravX + (1 - LP) * acc.x;
+    gravY = LP * gravY + (1 - LP) * acc.y;
+    gravZ = LP * gravZ + (1 - LP) * acc.z;
 
-    // Calibrate: collect first N samples to set standing baseline
-    if (!baselineSet) {
-      betaSamples.push(beta);
-      if (betaSamples.length >= CALIBRATE_FRAMES) {
-        baseline = betaSamples.reduce((a,b) => a+b, 0) / betaSamples.length;
-        baselineSet = true;
-        statusDot.className = 'status-dot ready';
+    // 暖機
+    warmup++;
+    if (warmup <= WARMUP_FRAMES) {
+      if (warmup < WARMUP_FRAMES) {
+        statusText.textContent = `校正中 ${warmup}/${WARMUP_FRAMES}`;
+      } else {
+        statusDot.className    = 'status-dot ready';
         statusText.textContent = '偵測中 · 開始深蹲';
-        setPhaseUI('idle');
       }
-      return;
+      if (warmup < WARMUP_FRAMES) return;
     }
 
-    const delta = Math.abs(beta - baseline);
+    // 動態加速度
+    const dynX = acc.x - gravX;
+    const dynY = acc.y - gravY;
+    const dynZ = acc.z - gravZ;
 
-    // State machine
-    if (phase === 'idle' && delta > THRESHOLD_DOWN) {
-      phase = 'down';
-      setPhaseUI('down');
-    } else if (phase === 'down' && delta < THRESHOLD_UP) {
-      phase = 'up';
-      setPhaseUI('up');
+    // 沿重力方向的分量（正 = 向上，即對抗重力方向）
+    const gMag = Math.sqrt(gravX*gravX + gravY*gravY + gravZ*gravZ) || 9.8;
+    const dynUp = -(dynX*gravX + dynY*gravY + dynZ*gravZ) / gMag;
+
+    updateAccelBar(dynUp);
+
+    if (locked) return;
+
+    // 狀態機
+    if (phase === 'idle' && dynUp > RISE_THRESHOLD) {
+      // 偵測到起立加速
+      phase = 'rising';
+      setPhaseUI('rising');
+    } else if (phase === 'rising' && Math.abs(dynUp) < STILL_THRESHOLD) {
+      // 加速度消退，起立完成
+      phase = 'idle';
       addCount();
-      // short pause then back to idle
+      setPhaseUI('done');
+      locked = true;
       setTimeout(() => {
-        phase = 'idle';
+        locked = false;
         setPhaseUI('idle');
       }, COOLDOWN_MS);
     }
   }
 
-  // ── Request permission (iOS 13+) ──────────────────────
-  function startGyro() {
-    if (typeof DeviceOrientationEvent === 'undefined') {
-      statusDot.className = 'status-dot error';
-      statusText.textContent = '不支援陀螺儀';
+  // ── 請求感應器權限 ──────────────────────────────────────────────────────────
+  function startMotion() {
+    if (typeof DeviceMotionEvent === 'undefined') {
+      statusDot.className    = 'status-dot error';
+      statusText.textContent = '不支援加速度計';
       return;
     }
-
-    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-      // iOS 13+ requires user gesture
-      DeviceOrientationEvent.requestPermission()
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+      // iOS 13+
+      DeviceMotionEvent.requestPermission()
         .then(state => {
           if (state === 'granted') {
-            window.addEventListener('deviceorientation', handleOrientation);
-            statusText.textContent = '校正中，請站直…';
+            window.addEventListener('devicemotion', handleMotion);
+            statusText.textContent = '校正中，請靜止…';
           } else {
-            statusDot.className = 'status-dot error';
+            statusDot.className    = 'status-dot error';
             statusText.textContent = '未獲得感應器權限';
           }
         })
         .catch(() => {
-          statusDot.className = 'status-dot error';
+          statusDot.className    = 'status-dot error';
           statusText.textContent = '權限請求失敗';
         });
     } else {
-      // Android / non-iOS
-      window.addEventListener('deviceorientation', handleOrientation);
-      statusText.textContent = '校正中，請站直…';
+      window.addEventListener('devicemotion', handleMotion);
+      statusText.textContent = '校正中，請靜止…';
     }
   }
 
-  // iOS requires requestPermission on user gesture
-  // We start automatically; on iOS it'll prompt via the first touch/interaction.
-  // Actually try on load, fall back to tap-to-start.
   (function init() {
-    if (typeof DeviceOrientationEvent !== 'undefined' &&
-        typeof DeviceOrientationEvent.requestPermission === 'function') {
-      // iOS: need gesture
+    if (typeof DeviceMotionEvent !== 'undefined' &&
+        typeof DeviceMotionEvent.requestPermission === 'function') {
       statusText.textContent = '點擊畫面開始';
       document.addEventListener('click', function once() {
         document.removeEventListener('click', once);
-        startGyro();
+        startMotion();
       }, { once: true });
     } else {
-      startGyro();
+      startMotion();
     }
   })();
 
-  // ── Reset ─────────────────────────────────────────────
+  // ── Reset ───────────────────────────────────────────────────────────────────
   document.getElementById('btn-reset').addEventListener('click', (e) => {
-    e.stopPropagation(); // don't trigger gyro start click
-    count = 0;
-    session = 0;
-    phase = 'idle';
-    baseline = null;
-    baselineSet = false;
-    betaSamples = [];
+    e.stopPropagation();
+    count = session = warmup = 0;
+    gravX = gravY = gravZ = 0;
+    phase  = 'idle';
+    locked = false;
 
-    countEl.textContent = '0';
+    countEl.textContent   = '0';
     sessionEl.textContent = '0';
     updateRing();
     setPhaseUI('idle');
+    updateAccelBar(0);
 
     if (statusDot.classList.contains('ready')) {
-      statusText.textContent = '校正中，請站直…';
-      statusDot.className = 'status-dot';
+      statusDot.className    = 'status-dot';
+      statusText.textContent = '校正中，請靜止…';
     }
   });
 </script>
