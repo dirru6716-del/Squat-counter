@@ -256,6 +256,19 @@
   <div class="phase-text" id="phase-text">準備好後按下方按鍵</div>
 </div>
 
+<!-- 最短蹲下時間滑桿 -->
+<div style="z-index:1; width:min(280px,90vw); display:flex; flex-direction:column; gap:5px;">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <span style="font-size:9px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;">最短蹲下時間</span>
+    <span style="font-family:'Bebas Neue',sans-serif; font-size:17px; color:var(--warn); letter-spacing:1px;" id="min-down-val">1.5s</span>
+  </div>
+  <input type="range" class="slider" id="min-down-slider" min="0.5" max="4.0" step="0.5" value="1.5">
+  <div style="display:flex; justify-content:space-between;">
+    <span style="font-size:8px; letter-spacing:1px; color:var(--muted);">0.5s（快速深蹲）</span>
+    <span style="font-size:8px; letter-spacing:1px; color:var(--muted);">4.0s（超慢速）</span>
+  </div>
+</div>
+
 <!-- 大按鍵 -->
 <div class="btn-wrap">
   <button class="btn-main state-idle" id="btn-main">
@@ -307,7 +320,8 @@
 
   // 感應器參數
   const LP             = 0.85;
-  const STILL_THRESHOLD = 1.2; // m/s² 靜止判定（自動切換 holding）
+  const STILL_THRESHOLD = 1.2; // m/s² 靜止判定
+  let   MIN_DOWN_MS     = 1500; // 至少蹲下幾 ms 後才允許切換維持（預設1.5秒）
 
   let gravX = 0, gravY = 0, gravZ = 0;
   let sensorReady = false;
@@ -462,11 +476,14 @@
     const dynZ  = acc.z - gravZ;
     const dynMag = Math.sqrt(dynX*dynX + dynY*dynY + dynZ*dynZ);
 
-    // 靜止超過 0.4 秒才切換（避免蹲下過程中的短暫靜止誤觸）
+    // 靜止超過 0.5 秒，且已蹲下超過最短時間，才切換
     if (dynMag < STILL_THRESHOLD) {
       if (!handleMotion._stillSince) {
         handleMotion._stillSince = performance.now();
-      } else if (performance.now() - handleMotion._stillSince > 400) {
+      } else if (
+        performance.now() - handleMotion._stillSince > 500 &&
+        performance.now() - downStart > MIN_DOWN_MS
+      ) {
         // 切換到 holding
         holdStart = performance.now();
         phase     = 'holding';
@@ -520,6 +537,14 @@
       holdStart = 0;
       handleMotion._stillSince = null;
     }
+  });
+
+  // ── 最短蹲下時間滑桿 ──────────────────────────────
+  const minDownSlider = document.getElementById('min-down-slider');
+  const minDownVal    = document.getElementById('min-down-val');
+  minDownSlider.addEventListener('input', () => {
+    MIN_DOWN_MS = parseFloat(minDownSlider.value) * 1000;
+    minDownVal.textContent = parseFloat(minDownSlider.value).toFixed(1) + 's';
   });
 
   // ── 請求感應器 ────────────────────────────────────
