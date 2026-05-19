@@ -319,9 +319,10 @@
   // ════════════════════════════════════════════════════
 
   // 感應器參數
-  const LP             = 0.85;
-  const STILL_THRESHOLD = 1.2; // m/s² 靜止判定
-  let   MIN_DOWN_MS     = 1500; // 至少蹲下幾 ms 後才允許切換維持（預設1.5秒）
+  const LP              = 0.85;
+  const STILL_THRESHOLD = 1.2;  // m/s² 靜止判定（切換到維持）
+  const RISE_THRESHOLD  = 3.0;  // m/s² 往上加速度（自動完成）
+  let   MIN_DOWN_MS     = 1500; // 至少蹲下幾 ms 後才允許切換維持
 
   let gravX = 0, gravY = 0, gravZ = 0;
   let sensorReady = false;
@@ -423,8 +424,8 @@
       btnLabel.textContent = '起立完成';
       btnHint.textContent  = '蹲到底後自動切換維持';
     } else if (s === 'hold') {
-      btnLabel.textContent = '起立完成';
-      btnHint.textContent  = '起立後按此完成這一下';
+      btnLabel.textContent = '手動完成';
+      btnHint.textContent  = '起立時感應器會自動偵測';
     }
   }
 
@@ -452,7 +453,27 @@
     cardHold.className = 'timer-card ' + holdClass;
   }
 
-  // ── 感應器：自動偵測靜止切換 holding ─────────────
+  // ── 完成一下（感應器或按鍵共用）────────────────────
+  function finishRep() {
+    if (phase !== 'descending' && phase !== 'holding') return;
+    stopRAF();
+    const now     = performance.now();
+    const downSec = ((holdStart > 0 ? holdStart : now) - downStart) / 1000;
+    const holdSec = holdStart > 0 ? (now - holdStart) / 1000 : 0;
+
+    timerDownEl.textContent = downSec.toFixed(1);
+    timerHoldEl.textContent = holdSec.toFixed(1);
+    addCount(downSec, holdSec);
+    setCardPhase('done-down', 'done-hold');
+    setPhaseUI('done');
+    setBtnState('idle');
+    phase     = 'idle';
+    holdStart = 0;
+    handleMotion._stillSince  = null;
+    handleMotion._risingSince  = null;
+  }
+
+  // ── 感應器：靜止→holding，往上→完成 ──────────────
   function handleMotion(e) {
     const acc = e.accelerationIncludingGravity;
     if (!acc || acc.x === null) return;
@@ -469,28 +490,47 @@
       statusText.textContent = '感應器就緒';
     }
 
-    if (phase !== 'descending') return;
+    if (phase !== 'descending' && phase !== 'holding') return;
 
-    const dynX  = acc.x - gravX;
-    const dynY  = acc.y - gravY;
-    const dynZ  = acc.z - gravZ;
+    const dynX   = acc.x - gravX;
+    const dynY   = acc.y - gravY;
+    const dynZ   = acc.z - gravZ;
     const dynMag = Math.sqrt(dynX*dynX + dynY*dynY + dynZ*dynZ);
 
-    // 靜止超過 0.5 秒，且已蹲下超過最短時間，才切換
+    // 沿重力方向的動態分量（正 = 向上）
+    const gMag  = Math.sqrt(gravX*gravX + gravY*gravY + gravZ*gravZ) || 9.8;
+    const dynUp = -(dynX*gravX + dynY*gravY + dynZ*gravZ) / gMag;
+
+    const now = performance.now();
+
+    // ── holding 階段：偵測往上加速 → 自動完成 ──────
+    if (phase === 'holding') {
+      if (dynUp > RISE_THRESHOLD) {
+        if (!handleMotion._risingSince) {
+          handleMotion._risingSince = now;
+        } else if (now - handleMotion._risingSince > 150) {
+          // 確認是真的往上，不是雜訊
+          finishRep();
+          return;
+        }
+      } else {
+        handleMotion._risingSince = null;
+      }
+      return; // holding 階段不做靜止判定
+    }
+
+    // ── descending 階段：靜止超過閾值 → 切換 holding ──
     if (dynMag < STILL_THRESHOLD) {
       if (!handleMotion._stillSince) {
-        handleMotion._stillSince = performance.now();
+        handleMotion._stillSince = now;
       } else if (
-        performance.now() - handleMotion._stillSince > 500 &&
-        performance.now() - downStart > MIN_DOWN_MS
+        now - handleMotion._stillSince > 500 &&
+        now - downStart > MIN_DOWN_MS
       ) {
-        // 切換到 holding
-        holdStart = performance.now();
+        holdStart = now;
         phase     = 'holding';
         handleMotion._stillSince = null;
-
-        // 固定蹲下時間
-        timerDownEl.textContent = ((holdStart - downStart) / 1000).toFixed(1);
+        timerDownEl.textContent  = ((holdStart - downStart) / 1000).toFixed(1);
         setCardPhase('done-down', 'phase-hold');
         setPhaseUI('holding');
         setBtnState('hold');
@@ -499,9 +539,10 @@
       handleMotion._stillSince = null;
     }
   }
-  handleMotion._stillSince = null;
+  handleMotion._stillSince  = null;
+  handleMotion._risingSince = null;
 
-  // ── 大按鍵邏輯 ────────────────────────────────────
+  // ── 大按鍵：第一下開始，第二下手動備用 ───────────
   btnMain.addEventListener('click', () => {
     const now = performance.now();
 
@@ -517,25 +558,8 @@
       startRAF();
 
     } else if (phase === 'descending' || phase === 'holding') {
-      // 第二下：結束，計數+1
-      stopRAF();
-
-      const holdEnd = now;
-      const downSec = (holdStart > 0 ? holdStart : holdEnd) - downStart;
-      const holdSec = holdStart > 0 ? holdEnd - holdStart : 0;
-
-      timerDownEl.textContent = (downSec / 1000).toFixed(1);
-      timerHoldEl.textContent = (holdSec / 1000).toFixed(1);
-
-      addCount(downSec / 1000, holdSec / 1000);
-
-      setCardPhase('done-down', 'done-hold');
-      setPhaseUI('done');
-      setBtnState('idle');
-
-      phase     = 'idle';
-      holdStart = 0;
-      handleMotion._stillSince = null;
+      // 手動備用：感應器沒抓到時按此完成
+      finishRep();
     }
   });
 
@@ -590,7 +614,8 @@
     totalDown = totalHold = 0;
     gravX = gravY = gravZ = 0;
     phase = 'idle'; holdStart = 0;
-    handleMotion._stillSince = null;
+    handleMotion._stillSince  = null;
+    handleMotion._risingSince = null;
     sensorReady = false;
 
     countEl.textContent    = '0';
