@@ -1,218 +1,98 @@
 <!DOCTYPE html>
+
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-
 <title>深蹲錄製器</title>
-
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@300;400;700&display=swap');
-
-:root{
-  --bg:#0a0a0f;
-  --surface:#13131a;
-  --accent:#c8f542;
-  --accent2:#42f5a4;
-  --text:#f0f0f0;
-  --muted:#555570;
-  --danger:#ff4d6d;
-  --warn:#f5a442;
-}
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:'Noto Sans TC',sans-serif;
-  min-height:100dvh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding:32px 20px;
-  gap:20px;
-  user-select:none;
-  -webkit-user-select:none;
-}
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@300;400;700&display=swap');
+  :root {
+    --bg:#0a0a0f; --surface:#13131a; --accent:#c8f542; --accent2:#42f5a4;
+    --text:#f0f0f0; --muted:#555570; --danger:#ff4d6d; --warn:#f5a442;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;
+    min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+    padding:32px 20px;gap:20px;
+    user-select:none;-webkit-user-select:none;
+  }
 
 h1{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:30px;
-  letter-spacing:6px;
-  color:var(--accent);
-  text-shadow:0 0 20px rgba(200,245,66,.3);
+font-family:‘Bebas Neue’,sans-serif;font-size:30px;letter-spacing:6px;
+color:var(–accent);text-shadow:0 0 20px rgba(200,245,66,.3);
 }
 
+/* Big timer */
 .timer{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:80px;
-  line-height:1;
-  color:var(--text);
-  letter-spacing:-2px;
+font-family:‘Bebas Neue’,sans-serif;font-size:80px;line-height:1;
+color:var(–text);letter-spacing:-2px;
 }
+.timer.rec{color:var(–danger)}
 
-.timer.rec{
-  color:var(--danger);
-}
+.timer-lbl{font-size:11px;letter-spacing:3px;color:var(–muted);text-transform:uppercase;text-align:center}
 
-.timer-lbl{
-  font-size:11px;
-  letter-spacing:3px;
-  color:var(--muted);
-  text-transform:uppercase;
-  text-align:center;
-}
-
-.sensor-row{
-  display:flex;
-  gap:12px;
-  width:100%;
-  max-width:340px;
-}
-
+/* Sensor display */
+.sensor-row{display:flex;gap:12px;width:100%;max-width:340px}
 .sbox{
-  flex:1;
-  background:var(--surface);
-  border:1px solid #222235;
-  border-radius:12px;
-  padding:10px;
-  text-align:center;
-  transition:border-color .2s;
+flex:1;background:var(–surface);border:1px solid #222235;
+border-radius:12px;padding:10px;text-align:center;transition:border-color .2s;
 }
+.sbox.up   {border-color:var(–accent)}
+.sbox.down {border-color:var(–danger)}
+.sbox.still{border-color:var(–warn)}
+.sval{font-family:‘Bebas Neue’,sans-serif;font-size:32px;color:var(–muted);transition:color .15s}
+.sbox.up    .sval{color:var(–accent)}
+.sbox.down  .sval{color:var(–danger)}
+.sbox.still .sval{color:var(–warn)}
+.slbl{font-size:9px;letter-spacing:2px;color:var(–muted);text-transform:uppercase;margin-top:2px}
 
-.sbox.up{
-  border-color:var(--accent);
-}
-
-.sbox.down{
-  border-color:var(--danger);
-}
-
-.sbox.still{
-  border-color:var(--warn);
-}
-
-.sval{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:32px;
-  color:var(--muted);
-  transition:color .15s;
-}
-
-.sbox.up .sval{
-  color:var(--accent);
-}
-
-.sbox.down .sval{
-  color:var(--danger);
-}
-
-.sbox.still .sval{
-  color:var(--warn);
-}
-
-.slbl{
-  font-size:9px;
-  letter-spacing:2px;
-  color:var(--muted);
-  text-transform:uppercase;
-  margin-top:2px;
-}
-
+/* Big button */
 .btn{
-  width:min(300px,90vw);
-  min-height:88px;
-  border-radius:22px;
-  border:2px solid var(--accent);
-  background:rgba(200,245,66,.05);
-  color:var(--accent);
-  font-family:'Noto Sans TC',sans-serif;
-  font-size:18px;
-  letter-spacing:4px;
-  cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:4px;
-  padding:12px;
-  box-shadow:0 0 24px rgba(200,245,66,.15);
+width:min(300px,90vw);min-height:88px;border-radius:22px;
+border:2px solid var(–accent);background:rgba(200,245,66,.05);
+color:var(–accent);font-family:‘Noto Sans TC’,sans-serif;
+font-size:18px;letter-spacing:4px;cursor:pointer;
+-webkit-tap-highlight-color:transparent;
+display:flex;flex-direction:column;align-items:center;justify-content:center;
+gap:4px;padding:12px;
+box-shadow:0 0 24px rgba(200,245,66,.15);
 }
-
 .btn.rec{
-  border-color:var(--danger);
-  color:var(--danger);
-  background:rgba(255,77,109,.06);
-  box-shadow:0 0 24px rgba(255,77,109,.25);
+border-color:var(–danger);color:var(–danger);
+background:rgba(255,77,109,.06);
+box-shadow:0 0 24px rgba(255,77,109,.25);
 }
-
 .btn.done{
-  border-color:var(--accent2);
-  color:var(--accent2);
-  background:rgba(66,245,164,.06);
+border-color:var(–accent2);color:var(–accent2);
+background:rgba(66,245,164,.06);
 }
+.btn:active{transform:scale(.97)}
+.btn-sub{font-size:10px;letter-spacing:2px;color:var(–muted);text-transform:uppercase}
 
-.btn:active{
-  transform:scale(.97);
-}
-
-.btn-sub{
-  font-size:10px;
-  letter-spacing:2px;
-  color:var(--muted);
-  text-transform:uppercase;
-}
-
+/* Download */
 .btn-dl{
-  width:min(300px,90vw);
-  padding:14px;
-  border-radius:14px;
-  border:1.5px solid var(--accent2);
-  background:rgba(66,245,164,.06);
-  color:var(--accent2);
-  font-family:'Noto Sans TC',sans-serif;
-  font-size:13px;
-  letter-spacing:2px;
-  cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
+width:min(300px,90vw);padding:14px;border-radius:14px;
+border:1.5px solid var(–accent2);background:rgba(66,245,164,.06);
+color:var(–accent2);font-family:‘Noto Sans TC’,sans-serif;
+font-size:13px;letter-spacing:2px;cursor:pointer;
+-webkit-tap-highlight-color:transparent;
 }
 
+/* Status */
 .status{
-  font-size:11px;
-  letter-spacing:1px;
-  color:var(--muted);
-  padding:8px 18px;
-  border:1px solid #222235;
-  border-radius:20px;
-  background:var(--surface);
-  text-align:center;
-  max-width:90vw;
+font-size:11px;letter-spacing:1px;color:var(–muted);
+padding:8px 18px;border:1px solid #222235;border-radius:20px;
+background:var(–surface);text-align:center;max-width:90vw;
 }
+.status.err{color:var(–danger);border-color:var(–danger)}
+.status.ok {color:var(–accent2);border-color:var(–accent2)}
 
-.status.err{
-  color:var(--danger);
-  border-color:var(--danger);
-}
-
-.status.ok{
-  color:var(--accent2);
-  border-color:var(--accent2);
-}
-
-.frame-info{
-  font-size:11px;
-  color:var(--muted);
-  letter-spacing:1px;
-}
+.frame-info{font-size:11px;color:var(–muted);letter-spacing:1px}
 </style>
-</head>
 
+</head>
 <body>
 
 <h1>深蹲錄製器</h1>
@@ -221,17 +101,14 @@ h1{
 <div class="timer-lbl" id="timer-lbl">尚未開始</div>
 
 <div class="sensor-row">
-
   <div class="sbox" id="sb-mag">
     <div class="sval" id="v-mag">--</div>
     <div class="slbl">dynMag</div>
   </div>
-
   <div class="sbox" id="sb-up">
     <div class="sval" id="v-up">--</div>
     <div class="slbl">dynUp</div>
   </div>
-
 </div>
 
 <div class="frame-info" id="frame-info">尚未錄製</div>
@@ -241,69 +118,50 @@ h1{
   <span class="btn-sub" id="btn-sub">iOS 會跳出權限視窗</span>
 </button>
 
-<button class="btn-dl" id="btn-dl" style="display:none">
-  ↓ 下載 CSV 檔案
-</button>
+<button class="btn-dl" id="btn-dl" style="display:none">↓ 下載 CSV</button>
 
 <div class="status" id="status">準備中…</div>
 
 <script>
 'use strict';
 
-// ── 狀態 ─────────────────────────────────────
-var step = 'init';
+// ── 狀態 ───────────────────────────────────────────────
+var step = 'init'; // init → ready → recording → done
 var sensorOn = false;
-
 var warmup = 0;
 var WARMUP = 25;
-
 var LP = 0.85;
-
-var gravX = 0;
-var gravY = 0;
-var gravZ = 0;
-
+var gravX = 0, gravY = 0, gravZ = 0;
 var logData = [];
-
 var isRec = false;
 var recStart = 0;
 var rafId = null;
 
-// ── DOM ─────────────────────────────────────
+// ── DOM ────────────────────────────────────────────────
 var timerEl   = document.getElementById('timer');
 var timerLbl  = document.getElementById('timer-lbl');
-
 var vMag      = document.getElementById('v-mag');
 var vUp       = document.getElementById('v-up');
-
 var sbMag     = document.getElementById('sb-mag');
 var sbUp      = document.getElementById('sb-up');
-
 var frameInfo = document.getElementById('frame-info');
-
 var btnMain   = document.getElementById('btn-main');
 var btnLabel  = document.getElementById('btn-label');
 var btnSub    = document.getElementById('btn-sub');
-
 var btnDl     = document.getElementById('btn-dl');
-
 var statusEl  = document.getElementById('status');
 
-// ── 狀態文字 ─────────────────────────────────
-function setStatus(text, type){
-
+// ── 設狀態文字 ─────────────────────────────────────────
+function setStatus(text, type) {
   statusEl.textContent = text;
-
   statusEl.className = 'status' + (type ? ' ' + type : '');
 }
 
-// ── 感應器 ───────────────────────────────────
-function handleMotion(e){
-
+// ── DeviceMotion handler ───────────────────────────────
+function handleMotion(e) {
   var acc = e.accelerationIncludingGravity;
-
-  if(!acc || acc.x === null){
-    setStatus('感應器無資料','err');
+  if (!acc || acc.x === null) {
+    setStatus('感應器無資料', 'err');
     return;
   }
 
@@ -312,369 +170,245 @@ function handleMotion(e){
   gravZ = LP * gravZ + (1 - LP) * acc.z;
 
   warmup++;
-
-  if(warmup < WARMUP){
-
+  if (warmup < WARMUP) {
     setStatus('校正中 ' + warmup + '/' + WARMUP);
-
     return;
   }
-
-  if(warmup === WARMUP){
-
+  if (warmup === WARMUP) {
     sensorOn = true;
     step = 'ready';
-
-    setStatus('感應器就緒，可以開始錄製','ok');
-
-    btnMain.className = 'btn';
-
+    setStatus('感應器就緒，可以開始錄製', 'ok');
+    btnMain.className   = 'btn';
     btnLabel.textContent = '開始錄製';
-    btnSub.textContent = '按下後連續做深蹲';
+    btnSub.textContent   = '按下後連續做深蹲';
   }
 
-  var dX = acc.x - gravX;
-  var dY = acc.y - gravY;
-  var dZ = acc.z - gravZ;
-
+  var dX = acc.x - gravX, dY = acc.y - gravY, dZ = acc.z - gravZ;
   var dynMag = Math.sqrt(dX*dX + dY*dY + dZ*dZ);
+  var gMag   = Math.sqrt(gravX*gravX + gravY*gravY + gravZ*gravZ) || 9.8;
+  var dynUp  = -(dX*gravX + dY*gravY + dZ*gravZ) / gMag;
 
-  var gMag = Math.sqrt(
-    gravX*gravX +
-    gravY*gravY +
-    gravZ*gravZ
-  ) || 9.8;
+  // 衍生特徵
+  // dynHoriz: 水平動態大小（移除垂直分量）
+  var uvX = gravX/gMag, uvY = gravY/gMag, uvZ = gravZ/gMag;
+  var hX = dX - dynUp*uvX, hY = dY - dynUp*uvY, hZ = dZ - dynUp*uvZ;
+  var dynHoriz = Math.sqrt(hX*hX + hY*hY + hZ*hZ);
 
-  var dynUp = -(
-    dX*gravX +
-    dY*gravY +
-    dZ*gravZ
-  ) / gMag;
+  // jerk: 這一幀 dynMag 與上一幀的差（加速度變化率）
+  var prevMag = (logData.length > 0) ? parseFloat(logData[logData.length-1][10]) : dynMag;
+  var jerk = Math.abs(dynMag - prevMag);
+
+  // dynUpSmooth / magSmooth: 最近10幀移動平均
+  var upSum = dynUp, magSum = dynMag, n = 1;
+  for (var k = logData.length-1; k >= Math.max(0, logData.length-9); k--) {
+    upSum  += parseFloat(logData[k][11]);
+    magSum += parseFloat(logData[k][10]);
+    n++;
+  }
+  var dynUpSmooth = upSum / n;
+  var magSmooth   = magSum / n;
+
+  // tiltAngle: 手機傾斜角（度），相對重力方向
+  var tiltAngle = Math.acos(Math.min(1, Math.abs(gravZ) / gMag)) * 180 / Math.PI;
 
   vMag.textContent = dynMag.toFixed(2);
+  vUp.textContent  = (dynUp >= 0 ? '+' : '') + dynUp.toFixed(2);
+  sbMag.className  = 'sbox' + (dynMag > 0.5 ? ' up' : dynMag < 0.3 ? ' still' : '');
+  sbUp.className   = 'sbox' + (dynUp > 0.3 ? ' up' : dynUp < -0.3 ? ' down' : ' still');
 
-  vUp.textContent =
-    (dynUp >= 0 ? '+' : '') +
-    dynUp.toFixed(2);
-
-  sbMag.className =
-    'sbox' +
-    (
-      dynMag > 0.5
-      ? ' up'
-      : dynMag < 0.3
-      ? ' still'
-      : ''
-    );
-
-  sbUp.className =
-    'sbox' +
-    (
-      dynUp > 0.3
-      ? ' up'
-      : dynUp < -0.3
-      ? ' down'
-      : ' still'
-    );
-
-  if(isRec){
-
-    var t =
-      (
-        (performance.now() - recStart) / 1000
-      ).toFixed(3);
-
+  if (isRec) {
+    var t = ((performance.now() - recStart) / 1000).toFixed(3);
     logData.push([
       t,
-
-      acc.x.toFixed(4),
-      acc.y.toFixed(4),
-      acc.z.toFixed(4),
-
-      gravX.toFixed(4),
-      gravY.toFixed(4),
-      gravZ.toFixed(4),
-
-      dynMag.toFixed(4),
-      dynUp.toFixed(4)
+      acc.x.toFixed(4), acc.y.toFixed(4), acc.z.toFixed(4),  // 原始加速度
+      gravX.toFixed(4), gravY.toFixed(4), gravZ.toFixed(4),  // 低通重力
+      dX.toFixed(4), dY.toFixed(4), dZ.toFixed(4),           // 動態加速度各軸
+      dynMag.toFixed(4), dynUp.toFixed(4),                   // 主要特徵
+      dynHoriz.toFixed(4),                                   // 水平動態大小
+      jerk.toFixed(4),                                       // 加速度變化率
+      dynUpSmooth.toFixed(4),                                // dynUp 移動平均
+      magSmooth.toFixed(4),                                  // dynMag 移動平均
+      tiltAngle.toFixed(2)                                   // 手機傾斜角(度)
     ]);
-
-    frameInfo.textContent =
-      '已錄製 ' +
-      logData.length +
-      ' 幀';
+    frameInfo.textContent = '已錄製 ' + logData.length + ' 幀';
   }
 }
 
-// ── Timer ───────────────────────────────────
-function startRAF(){
-
-  if(rafId){
-    cancelAnimationFrame(rafId);
-  }
-
-  function tick(){
-
-    if(isRec){
-
-      timerEl.textContent =
-        (
-          (performance.now() - recStart) / 1000
-        ).toFixed(1);
+// ── Timer RAF ──────────────────────────────────────────
+function startRAF() {
+  if (rafId) cancelAnimationFrame(rafId);
+  function tick() {
+    if (isRec) {
+      timerEl.textContent = ((performance.now() - recStart) / 1000).toFixed(1);
     }
-
     rafId = requestAnimationFrame(tick);
   }
-
   rafId = requestAnimationFrame(tick);
 }
 
-// ── 主按鍵 ───────────────────────────────────
-btnMain.addEventListener('click', function(){
+// ── 主按鍵：必須在 click 事件裡直接呼叫 requestPermission ──
+btnMain.addEventListener('click', function() {
 
-  // INIT
-  if(step === 'init'){
-
+  // STEP 1: 還沒授權 → 請求權限（這裡必須是同步呼叫）
+  if (step === 'init') {
     setStatus('請求權限中…');
 
-    if(
-      typeof DeviceMotionEvent !== 'undefined' &&
-      typeof DeviceMotionEvent.requestPermission === 'function'
-    ){
+    // iOS 13+ 需要授權
+    if (typeof DeviceMotionEvent !== 'undefined' &&
+        typeof DeviceMotionEvent.requestPermission === 'function') {
 
-      DeviceMotionEvent
-        .requestPermission()
-        .then(function(state){
+      DeviceMotionEvent.requestPermission().then(function(state) {
+        if (state === 'granted') {
+          window.addEventListener('devicemotion', handleMotion);
+          setStatus('授權成功，校正中…');
+        } else {
+          setStatus('權限被拒絕（state=' + state + '）', 'err');
+        }
+      }).catch(function(err) {
+        setStatus('權限錯誤：' + (err.message || err), 'err');
+      });
 
-          if(state === 'granted'){
-
-            window.addEventListener(
-              'devicemotion',
-              handleMotion
-            );
-
-            setStatus('授權成功，校正中…');
-
-          }else{
-
-            setStatus(
-              '權限被拒絕',
-              'err'
-            );
-          }
-        })
-        .catch(function(err){
-
-          setStatus(
-            '權限錯誤：' +
-            (err.message || err),
-            'err'
-          );
-        });
-
-    }else{
-
-      window.addEventListener(
-        'devicemotion',
-        handleMotion
-      );
-
+    } else {
+      // 非 iOS 或舊版直接掛 listener
+      window.addEventListener('devicemotion', handleMotion);
       setStatus('校正中…');
     }
-
     return;
   }
 
-  // READY → RECORDING
-  if(step === 'ready'){
-
-    isRec = true;
-
-    logData = [];
-
+  // STEP 2: 已就緒 → 開始錄製
+  if (step === 'ready') {
+    isRec    = true;
+    logData  = [];
     recStart = performance.now();
+    step     = 'recording';
 
-    step = 'recording';
-
-    btnMain.className = 'btn rec';
-
-    btnLabel.textContent =
-      '● 錄製中（按此停止）';
-
-    btnSub.textContent =
-      '專心做深蹲';
-
+    btnMain.className   = 'btn rec';
+    btnLabel.textContent = '● 錄製中（按此停止）';
+    btnSub.textContent   = '專心做深蹲';
     timerEl.classList.add('rec');
-
     timerLbl.textContent = '錄製中';
-
     btnDl.style.display = 'none';
-
-    frameInfo.textContent =
-      '已錄製 0 幀';
-
+    frameInfo.textContent = '已錄製 0 幀';
     startRAF();
-
     setStatus('正在錄製…');
-
     return;
   }
 
-  // RECORDING → DONE
-  if(step === 'recording'){
-
+  // STEP 3: 錄製中 → 停止
+  if (step === 'recording') {
     isRec = false;
-
-    step = 'done';
+    step  = 'done';
 
     timerEl.classList.remove('rec');
+    timerLbl.textContent = '錄製完成 · ' + logData.length + ' 幀';
 
-    timerLbl.textContent =
-      '錄製完成 · ' +
-      logData.length +
-      ' 幀';
+    btnMain.className   = 'btn done';
+    btnLabel.textContent = '再次錄製';
+    btnSub.textContent   = '按下清除並重新錄製';
 
-    btnMain.className = 'btn done';
-
-    btnLabel.textContent =
-      '再次錄製';
-
-    btnSub.textContent =
-      '按下清除並重新錄製';
-
-    if(logData.length > 0){
-
-      btnDl.style.display = '';
-    }
-
-    setStatus(
-      '完成！可下載 CSV',
-      'ok'
-    );
-
+    if (logData.length > 0) btnDl.style.display = '';
+    setStatus('完成！可下載 CSV', 'ok');
     return;
   }
 
-  // DONE → RECORDING
-  if(step === 'done'){
-
-    isRec = true;
-
-    logData = [];
-
+  // STEP 4: 完成 → 重新錄製
+  if (step === 'done') {
+    isRec    = true;
+    logData  = [];
     recStart = performance.now();
+    step     = 'recording';
 
-    step = 'recording';
-
-    btnMain.className = 'btn rec';
-
-    btnLabel.textContent =
-      '● 錄製中（按此停止）';
-
-    btnSub.textContent =
-      '專心做深蹲';
-
+    btnMain.className   = 'btn rec';
+    btnLabel.textContent = '● 錄製中（按此停止）';
+    btnSub.textContent   = '專心做深蹲';
     timerEl.classList.add('rec');
-
     timerLbl.textContent = '錄製中';
-
     btnDl.style.display = 'none';
-
-    frameInfo.textContent =
-      '已錄製 0 幀';
-
+    frameInfo.textContent = '已錄製 0 幀';
     setStatus('正在錄製…');
-
     return;
   }
 });
 
-// ── CSV 下載 ─────────────────────────────────
-btnDl.addEventListener('click', function(){
+// ── 下載按鈕（iOS friendly）───────────────────────────────
+btnDl.addEventListener('click', function() {
+  if (logData.length === 0) return;
 
-  if(logData.length === 0){
-    return;
-  }
+  var hdr = 'time_s,accX,accY,accZ,gravX,gravY,gravZ,dX,dY,dZ,' +
+            'dynMag,dynUp,dynHoriz,jerk,dynUpSmooth,magSmooth,tiltAngle\n';
+  var csv = hdr + logData.map(function(r){ return r.join(','); }).join('\n');
+  var fname = 'squat_' + new Date().toISOString().slice(0,19).replace(/[:T]/g,'-') + '.csv';
 
-  var hdr =
-    'time_s,accX,accY,accZ,gravX,gravY,gravZ,dynMag,dynUp\n';
+  // ── 方法1: 標準 blob 下載（Android / 桌面）──────────────
+  try {
+    var blob = new Blob([csv], { type: 'text/csv' });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href     = url;
+    a.download = fname;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
 
-  var csv =
-    hdr +
-    logData
-      .map(function(r){
-        return r.join(',');
-      })
-      .join('\n');
-
-  // Excel UTF-8
-  var blob = new Blob(
-    ['\ufeff' + csv],
-    {
-      type:'text/csv;charset=utf-8;'
+    // 如果是 iOS，blob 下載通常無效，改用方法2
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+      throw new Error('iOS');
     }
-  );
+    return;
+  } catch(e) {}
 
-  var now = new Date();
+  // ── 方法2: iOS — 用 Web Share API 直接分享檔案 ────────────
+  if (navigator.share && navigator.canShare) {
+    var blob2 = new Blob([csv], { type: 'text/csv' });
+    var file  = new File([blob2], fname, { type: 'text/csv' });
+    if (navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: fname })
+        .catch(function(err){
+          if (err.name !== 'AbortError') showTextFallback(csv);
+        });
+      return;
+    }
+  }
 
-  var filename =
-    'squat_record_' +
-    now.getFullYear() +
-    String(now.getMonth()+1).padStart(2,'0') +
-    String(now.getDate()).padStart(2,'0') +
-    '_' +
-    String(now.getHours()).padStart(2,'0') +
-    String(now.getMinutes()).padStart(2,'0') +
-    String(now.getSeconds()).padStart(2,'0') +
-    '.csv';
-
-  var url =
-    URL.createObjectURL(blob);
-
-  var a =
-    document.createElement('a');
-
-  a.href = url;
-
-  a.download = filename;
-
-  document.body.appendChild(a);
-
-  a.click();
-
-  document.body.removeChild(a);
-
-  URL.revokeObjectURL(url);
-
-  setStatus(
-    'CSV 已開始下載：' + filename,
-    'ok'
-  );
+  // ── 方法3: 最後備援 — 顯示文字讓使用者複製 ──────────────
+  showTextFallback(csv);
 });
 
-// ── 初始提示 ─────────────────────────────────
-if(typeof DeviceMotionEvent === 'undefined'){
+function showTextFallback(csv) {
+  var overlay = document.createElement('div');
+  overlay.style.cssText =
+    'position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:999;' +
+    'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
+    'padding:20px;gap:14px;';
+  overlay.innerHTML =
+    '<div style="color:#c8f542;font-family:\'Bebas Neue\',sans-serif;font-size:20px;letter-spacing:4px">CSV 資料</div>' +
+    '<div style="color:#888;font-size:10px;text-align:center">點擊文字框自動全選，長按複製後存為 .csv</div>' +
+    '<textarea readonly style="width:100%;height:45vh;background:#13131a;color:#aaa;border:1px solid #333;' +
+    'border-radius:8px;padding:10px;font-size:9px;font-family:monospace;resize:none;' +
+    '-webkit-user-select:text;user-select:text">' + csv + '</textarea>' +
 
-  setStatus(
-    '此瀏覽器不支援感應器',
-    'err'
-  );
+```
+'<button style="background:transparent;border:1.5px solid #c8f542;color:#c8f542;' +
+'padding:12px 40px;border-radius:40px;font-size:13px;letter-spacing:3px;cursor:pointer;" ' +
+'onclick="this.parentElement.remove()">關閉</button>';
+```
 
-  btnLabel.textContent = '不支援';
+var ta = overlay.querySelector(‘textarea’);
+ta.addEventListener(‘focus’, function(){ this.select(); });
+ta.addEventListener(‘click’, function(){ this.select(); });
+document.body.appendChild(overlay);
+}
 
-}else if(
-  typeof DeviceMotionEvent.requestPermission === 'function'
-){
-
-  setStatus(
-    '請點擊按鍵授權感應器存取'
-  );
-
-}else{
-
-  setStatus(
-    '請點擊按鍵啟動感應器'
-  );
+// ── 初始狀態提示 ───────────────────────────────────────
+if (typeof DeviceMotionEvent === ‘undefined’) {
+setStatus(‘此瀏覽器不支援感應器’, ‘err’);
+btnLabel.textContent = ‘不支援’;
+} else if (typeof DeviceMotionEvent.requestPermission === ‘function’) {
+setStatus(‘請點擊按鍵授權感應器存取’);
+} else {
+setStatus(‘請點擊按鍵啟動感應器’);
 }
 </script>
 
