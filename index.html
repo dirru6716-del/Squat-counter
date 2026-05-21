@@ -186,7 +186,32 @@
   .status-text { font-size: 10px; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; }
 
   /* ── Reset ── */
-  .btn-reset {
+  .btn-record {
+    z-index: 1; border: 1.5px solid #333350;
+    color: var(--muted); font-family: 'Noto Sans TC', sans-serif;
+    font-size: 11px; letter-spacing: 3px; padding: 10px 24px;
+    border-radius: 40px; cursor: pointer;
+    transition: all 0.2s; background: transparent;
+    -webkit-tap-highlight-color: transparent;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-record .rec-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--muted); transition: background 0.2s;
+  }
+  .btn-record.recording {
+    border-color: var(--danger); color: var(--danger);
+    background: rgba(255,77,109,0.06);
+    box-shadow: 0 0 12px rgba(255,77,109,0.2);
+  }
+  .btn-record.recording .rec-dot {
+    background: var(--danger);
+    animation: blink 0.8s ease-in-out infinite;
+  }
+  .btn-record.has-data {
+    border-color: var(--accent2); color: var(--accent2);
+    background: rgba(66,245,164,0.06);
+  }
     z-index: 1; background: transparent; border: 1px solid #2a2a3a;
     color: var(--muted); font-family: 'Noto Sans TC', sans-serif;
     font-size: 11px; letter-spacing: 3px; padding: 10px 36px;
@@ -303,6 +328,16 @@
   <div class="status-text" id="status-text">點擊畫面啟用感應器</div>
 </div>
 
+<div style="display:flex; gap:10px; z-index:1;">
+  <button class="btn-record" id="btn-record">
+    <span class="rec-dot"></span>
+    <span id="rec-label">開始錄製</span>
+  </button>
+  <button class="btn-record has-data" id="btn-download" style="display:none;">
+    ↓ 下載 CSV
+  </button>
+</div>
+
 <button class="btn-reset" id="btn-reset">歸　零</button>
 
 <div class="flash" id="flash"></div>
@@ -340,6 +375,11 @@
   let session  = 0;
   let best     = parseInt(localStorage.getItem('squat_best') || '0');
   let repCount = 0, totalDown = 0, totalHold = 0;
+
+  // 錄製
+  let isRecording = false;
+  let logData     = []; // 每筆: {t, accX, accY, accZ, gravX, gravY, gravZ, dynMag, dynUp, phase}
+  let recordStart = 0;
 
   // DOM
   const countEl    = document.getElementById('count');
@@ -503,6 +543,18 @@
 
     const now = performance.now();
 
+    // ── 錄製 log ───────────────────────────────────────
+    if (isRecording) {
+      logData.push({
+        t:      ((now - recordStart) / 1000).toFixed(3),
+        accX:   acc.x.toFixed(4),  accY: acc.y.toFixed(4),  accZ: acc.z.toFixed(4),
+        gX:     gravX.toFixed(4),  gY:   gravY.toFixed(4),  gZ:   gravZ.toFixed(4),
+        dynMag: dynMag.toFixed(4),
+        dynUp:  dynUp.toFixed(4),
+        phase:  phase
+      });
+    }
+
     // ── holding 階段：偵測往上加速 → 自動完成 ──────
     if (phase === 'holding') {
       if (dynUp > RISE_THRESHOLD) {
@@ -605,6 +657,51 @@
       startMotion();
     }
   })();
+
+  // ── 錄製按鍵 ──────────────────────────────────────
+  const btnRecord   = document.getElementById('btn-record');
+  const btnDownload = document.getElementById('btn-download');
+  const recLabel    = document.getElementById('rec-label');
+
+  btnRecord.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!isRecording) {
+      // 開始錄製
+      isRecording  = true;
+      logData      = [];
+      recordStart  = performance.now();
+      btnRecord.classList.add('recording');
+      recLabel.textContent = '停止錄製';
+      btnDownload.style.display = 'none';
+    } else {
+      // 停止錄製
+      isRecording = false;
+      btnRecord.classList.remove('recording');
+      recLabel.textContent = '開始錄製';
+      if (logData.length > 0) {
+        btnDownload.style.display = '';
+      }
+    }
+  });
+
+  btnDownload.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (logData.length === 0) return;
+
+    // 產生 CSV
+    const header = 'time_s,accX,accY,accZ,gravX,gravY,gravZ,dynMag,dynUp,phase\n';
+    const rows   = logData.map(r =>
+      `${r.t},${r.accX},${r.accY},${r.accZ},${r.gX},${r.gY},${r.gZ},${r.dynMag},${r.dynUp},${r.phase}`
+    ).join('\n');
+
+    const blob = new Blob([header + rows], { type: 'text/csv' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `squat_log_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
 
   // ── Reset ─────────────────────────────────────────
   document.getElementById('btn-reset').addEventListener('click', (e) => {
