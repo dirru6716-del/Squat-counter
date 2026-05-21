@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -26,130 +27,131 @@
     background-size:40px 40px;
   }
 
-  .header{text-align:center;z-index:1}
-  .header h1{
-    font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,8vw,36px);
-    letter-spacing:6px;color:var(--accent);text-shadow:0 0 20px var(--glow);
-  }
-  .header p{font-size:10px;letter-spacing:2px;color:var(--muted);margin-top:4px;text-transform:uppercase}
+.header{text-align:center;z-index:1}
+.header h1{
+font-family:‘Bebas Neue’,sans-serif;font-size:clamp(26px,8vw,36px);
+letter-spacing:6px;color:var(–accent);text-shadow:0 0 20px var(–glow);
+}
+.header p{font-size:10px;letter-spacing:2px;color:var(–muted);margin-top:4px;text-transform:uppercase}
 
-  /* ── 即時儀表板 ── */
-  .dashboard{
-    display:flex;flex-direction:column;align-items:center;gap:16px;z-index:1;width:100%;
-  }
+/* ── 即時儀表板 ── */
+.dashboard{
+display:flex;flex-direction:column;align-items:center;gap:16px;z-index:1;width:100%;
+}
 
-  /* 大數字：已錄製時間 */
-  .timer-big{
-    font-family:'Bebas Neue',sans-serif;font-size:88px;line-height:1;
-    color:var(--text);letter-spacing:-2px;text-align:center;
-    text-shadow:0 0 30px rgba(200,245,66,.2);
-  }
-  .timer-big.rec{color:var(--danger);text-shadow:0 0 30px rgba(255,77,109,.3)}
-  .timer-lbl{font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:-8px}
+/* 大數字：已錄製時間 */
+.timer-big{
+font-family:‘Bebas Neue’,sans-serif;font-size:88px;line-height:1;
+color:var(–text);letter-spacing:-2px;text-align:center;
+text-shadow:0 0 30px rgba(200,245,66,.2);
+}
+.timer-big.rec{color:var(–danger);text-shadow:0 0 30px rgba(255,77,109,.3)}
+.timer-lbl{font-size:10px;letter-spacing:3px;color:var(–muted);text-transform:uppercase;margin-top:-8px}
 
-  /* 感應器即時顯示 */
-  .sensor-panel{
-    display:flex;gap:12px;width:100%;max-width:340px;
-  }
-  .sensor-box{
-    flex:1;background:var(--surface);border:1px solid #222235;
-    border-radius:12px;padding:10px 12px;text-align:center;
-    transition:border-color .2s,box-shadow .2s;
-  }
-  .sensor-box.active-up   {border-color:var(--accent); box-shadow:0 0 12px rgba(200,245,66,.2)}
-  .sensor-box.active-down {border-color:var(--danger);  box-shadow:0 0 12px rgba(255,77,109,.2)}
-  .sensor-box.active-still{border-color:var(--warn);    box-shadow:0 0 12px rgba(245,164,66,.15)}
-  .sensor-val{
-    font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1px;
-    color:var(--muted);transition:color .15s;
-  }
-  .sensor-box.active-up    .sensor-val{color:var(--accent)}
-  .sensor-box.active-down  .sensor-val{color:var(--danger)}
-  .sensor-box.active-still .sensor-val{color:var(--warn)}
-  .sensor-lbl{font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+/* 感應器即時顯示 */
+.sensor-panel{
+display:flex;gap:12px;width:100%;max-width:340px;
+}
+.sensor-box{
+flex:1;background:var(–surface);border:1px solid #222235;
+border-radius:12px;padding:10px 12px;text-align:center;
+transition:border-color .2s,box-shadow .2s;
+}
+.sensor-box.active-up   {border-color:var(–accent); box-shadow:0 0 12px rgba(200,245,66,.2)}
+.sensor-box.active-down {border-color:var(–danger);  box-shadow:0 0 12px rgba(255,77,109,.2)}
+.sensor-box.active-still{border-color:var(–warn);    box-shadow:0 0 12px rgba(245,164,66,.15)}
+.sensor-val{
+font-family:‘Bebas Neue’,sans-serif;font-size:36px;letter-spacing:1px;
+color:var(–muted);transition:color .15s;
+}
+.sensor-box.active-up    .sensor-val{color:var(–accent)}
+.sensor-box.active-down  .sensor-val{color:var(–danger)}
+.sensor-box.active-still .sensor-val{color:var(–warn)}
+.sensor-lbl{font-size:8px;letter-spacing:2px;color:var(–muted);text-transform:uppercase;margin-top:2px}
 
-  /* 垂直加速度 bar */
-  .bar-wrap{
-    display:flex;flex-direction:row;align-items:center;gap:8px;
-  }
-  .bar-arrows{
-    display:flex;flex-direction:column;justify-content:space-between;
-    align-items:center;height:120px;font-size:11px;
-  }
-  .bar-track{
-    width:16px;height:120px;background:var(--surface);border-radius:8px;
-    overflow:hidden;position:relative;border:1px solid #222235;
-  }
-  .bar-track::after{
-    content:'';position:absolute;top:50%;left:0;
-    width:100%;height:1px;background:#333350;
-  }
-  .bar-fill{
-    position:absolute;left:0;width:100%;height:0%;border-radius:8px;
-    transition:height .04s,top .04s,background .1s;
-  }
-  .bar-lbl{
-    font-size:8px;letter-spacing:2px;color:var(--muted);
-    text-transform:uppercase;writing-mode:vertical-rl;
-  }
+/* 垂直加速度 bar */
+.bar-wrap{
+display:flex;flex-direction:row;align-items:center;gap:8px;
+}
+.bar-arrows{
+display:flex;flex-direction:column;justify-content:space-between;
+align-items:center;height:120px;font-size:11px;
+}
+.bar-track{
+width:16px;height:120px;background:var(–surface);border-radius:8px;
+overflow:hidden;position:relative;border:1px solid #222235;
+}
+.bar-track::after{
+content:’’;position:absolute;top:50%;left:0;
+width:100%;height:1px;background:#333350;
+}
+.bar-fill{
+position:absolute;left:0;width:100%;height:0%;border-radius:8px;
+transition:height .04s,top .04s,background .1s;
+}
+.bar-lbl{
+font-size:8px;letter-spacing:2px;color:var(–muted);
+text-transform:uppercase;writing-mode:vertical-rl;
+}
 
-  /* 幀數計數 */
-  .frame-count{
-    font-size:11px;letter-spacing:1px;color:var(--muted);
-  }
+/* 幀數計數 */
+.frame-count{
+font-size:11px;letter-spacing:1px;color:var(–muted);
+}
 
-  /* ── 大按鍵 ── */
-  .btn-main{
-    width:min(300px,90vw);height:90px;border-radius:24px;
-    border:2px solid #333350;background:var(--surface);
-    color:var(--muted);font-family:'Noto Sans TC',sans-serif;
-    font-size:18px;letter-spacing:4px;cursor:pointer;
-    transition:all .15s;-webkit-tap-highlight-color:transparent;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
-    z-index:1;
-  }
-  .btn-main.ready{
-    border-color:var(--accent);color:var(--accent);
-    box-shadow:0 0 24px rgba(200,245,66,.2);
-  }
-  .btn-main.recording{
-    border-color:var(--danger);color:var(--danger);
-    background:rgba(255,77,109,.06);
-    box-shadow:0 0 24px rgba(255,77,109,.3);
-  }
-  .btn-main.has-data{
-    border-color:var(--accent2);color:var(--accent2);
-    box-shadow:0 0 24px rgba(66,245,164,.2);
-  }
-  .btn-sub{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
-  .rec-dot{
-    width:10px;height:10px;border-radius:50%;
-    background:var(--danger);display:inline-block;margin-right:6px;
-    animation:blink .8s ease-in-out infinite;
-  }
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+/* ── 大按鍵 ── */
+.btn-main{
+width:min(300px,90vw);height:90px;border-radius:24px;
+border:2px solid #333350;background:var(–surface);
+color:var(–muted);font-family:‘Noto Sans TC’,sans-serif;
+font-size:18px;letter-spacing:4px;cursor:pointer;
+transition:all .15s;-webkit-tap-highlight-color:transparent;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+z-index:1;
+}
+.btn-main.ready{
+border-color:var(–accent);color:var(–accent);
+box-shadow:0 0 24px rgba(200,245,66,.2);
+}
+.btn-main.recording{
+border-color:var(–danger);color:var(–danger);
+background:rgba(255,77,109,.06);
+box-shadow:0 0 24px rgba(255,77,109,.3);
+}
+.btn-main.has-data{
+border-color:var(–accent2);color:var(–accent2);
+box-shadow:0 0 24px rgba(66,245,164,.2);
+}
+.btn-sub{font-size:9px;letter-spacing:2px;color:var(–muted);text-transform:uppercase}
+.rec-dot{
+width:10px;height:10px;border-radius:50%;
+background:var(–danger);display:inline-block;margin-right:6px;
+animation:blink .8s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-  /* ── 下載 ── */
-  .btn-dl{
-    width:min(300px,90vw);padding:14px;border-radius:16px;
-    border:1.5px solid var(--accent2);background:rgba(66,245,164,.06);
-    color:var(--accent2);font-family:'Noto Sans TC',sans-serif;
-    font-size:14px;letter-spacing:3px;cursor:pointer;
-    transition:all .15s;-webkit-tap-highlight-color:transparent;
-    z-index:1;display:none;
-  }
-  .btn-dl:active{background:rgba(66,245,164,.15)}
+/* ── 下載 ── */
+.btn-dl{
+width:min(300px,90vw);padding:14px;border-radius:16px;
+border:1.5px solid var(–accent2);background:rgba(66,245,164,.06);
+color:var(–accent2);font-family:‘Noto Sans TC’,sans-serif;
+font-size:14px;letter-spacing:3px;cursor:pointer;
+transition:all .15s;-webkit-tap-highlight-color:transparent;
+z-index:1;display:none;
+}
+.btn-dl:active{background:rgba(66,245,164,.15)}
 
-  /* ── 狀態 ── */
-  .status-row{
-    display:flex;align-items:center;gap:8px;background:var(--surface);
-    border:1px solid #222235;border-radius:20px;padding:7px 16px;z-index:1;
-  }
-  .sdot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:background .3s,box-shadow .3s}
-  .sdot.ready{background:var(--accent2);box-shadow:0 0 8px var(--accent2);animation:blink 1.6s ease-in-out infinite}
-  .sdot.error{background:var(--danger);box-shadow:0 0 8px var(--danger)}
-  .stxt{font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase}
+/* ── 狀態 ── */
+.status-row{
+display:flex;align-items:center;gap:8px;background:var(–surface);
+border:1px solid #222235;border-radius:20px;padding:7px 16px;z-index:1;
+}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(–muted);transition:background .3s,box-shadow .3s}
+.sdot.ready{background:var(–accent2);box-shadow:0 0 8px var(–accent2);animation:blink 1.6s ease-in-out infinite}
+.sdot.error{background:var(–danger);box-shadow:0 0 8px var(–danger)}
+.stxt{font-size:10px;letter-spacing:1.5px;color:var(–muted);text-transform:uppercase}
 </style>
+
 </head>
 <body>
 
@@ -159,15 +161,18 @@
 </div>
 
 <!-- 儀表板 -->
+
 <div class="dashboard">
 
   <!-- 錄製計時 -->
+
   <div>
     <div class="timer-big" id="timer">0.0</div>
     <div class="timer-lbl" id="timer-lbl">尚未開始錄製</div>
   </div>
 
   <!-- 感應器數值 + 垂直 bar -->
+
   <div style="display:flex;align-items:center;gap:16px">
     <!-- 數值面板 -->
     <div class="sensor-panel" style="flex-direction:column;width:160px">
@@ -181,34 +186,41 @@
       </div>
     </div>
 
-    <!-- 垂直 bar -->
-    <div class="bar-wrap">
-      <div class="bar-arrows">
-        <span style="color:var(--accent)">↑</span>
-        <span style="color:var(--danger)">↓</span>
-      </div>
-      <div class="bar-track">
-        <div class="bar-fill" id="bar-fill"></div>
-      </div>
-      <div class="bar-lbl">dynUp</div>
-    </div>
+```
+<!-- 垂直 bar -->
+<div class="bar-wrap">
+  <div class="bar-arrows">
+    <span style="color:var(--accent)">↑</span>
+    <span style="color:var(--danger)">↓</span>
+  </div>
+  <div class="bar-track">
+    <div class="bar-fill" id="bar-fill"></div>
+  </div>
+  <div class="bar-lbl">dynUp</div>
+</div>
+```
+
   </div>
 
   <!-- 幀數 -->
+
   <div class="frame-count" id="frame-count">已記錄 0 幀</div>
 
 </div>
 
 <!-- 大按鍵 -->
+
 <button class="btn-main" id="btn-main">
   <span id="btn-label">點擊畫面啟用感應器</span>
   <span class="btn-sub" id="btn-sub">等待感應器就緒</span>
 </button>
 
 <!-- 下載 -->
-<button class="btn-dl" id="btn-dl">↓ 下載 CSV</button>
+
+<button class="btn-dl" id="btn-dl">↓ 下載 CSV（iOS 在新分頁長按儲存）</button>
 
 <!-- 狀態 -->
+
 <div class="status-row">
   <div class="sdot" id="sdot"></div>
   <div class="stxt" id="stxt">請點擊畫面啟用感應器</div>
@@ -383,51 +395,101 @@ btnDl.addEventListener('click', () => {
   if (logData.length === 0) return;
   const hdr  = 'time_s,accX,accY,accZ,gravX,gravY,gravZ,dynMag,dynUp\n';
   const rows = logData.map(r => r.join(',')).join('\n');
-  const a    = document.createElement('a');
-  a.href     = URL.createObjectURL(new Blob([hdr + rows], {type:'text/csv'}));
-  a.download = `squat_raw_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
-  a.click();
+  const csv  = hdr + rows;
+
+  // iOS Safari 無法用 blob + a.click() 下載
+  // 改用 data URI 在新分頁開啟，讓使用者長按儲存
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if (isIOS) {
+    // 用 data URI 開新分頁
+    const dataUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    const w = window.open(dataUri, '_blank');
+    if (!w) {
+      // 被 popup blocker 擋住，改用 textarea 讓使用者複製
+      showCopyFallback(csv);
+    }
+  } else {
+    // 非 iOS 正常下載
+    const a    = document.createElement('a');
+    a.href     = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+    a.download = `squat_raw_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
+    a.click();
+  }
 });
+
+// iOS fallback：顯示全文讓使用者複製
+function showCopyFallback(csv) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:999;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:24px;gap:16px;
+  `;
+  overlay.innerHTML = `
+    <div style="color:#c8f542;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px">複製 CSV 資料</div>
+    <div style="color:#888;font-size:11px;letter-spacing:1px;text-align:center">全選後複製，貼到記事本儲存為 .csv</div>
+    <textarea readonly style="
+      width:100%;height:260px;background:#13131a;color:#aaa;
+      border:1px solid #333;border-radius:8px;padding:10px;
+      font-size:10px;font-family:monospace;resize:none;
+    ">${csv}</textarea>
+
+```
+<button onclick="this.parentElement.remove()" style="
+  background:transparent;border:1.5px solid #c8f542;color:#c8f542;
+  padding:12px 40px;border-radius:40px;font-size:13px;letter-spacing:3px;
+  cursor:pointer;
+">關閉</button>
+```
+
+`;
+// 點 textarea 自動全選
+overlay.querySelector(‘textarea’).addEventListener(‘focus’, function() {
+this.select();
+});
+document.body.appendChild(overlay);
+}
 
 // ── 請求感應器 ────────────────────────────────────────────────
 function startMotion() {
-  if (typeof DeviceMotionEvent === 'undefined') {
-    sdot.className = 'sdot error';
-    stxt.textContent = '不支援感應器';
-    return;
-  }
-  if (typeof DeviceMotionEvent.requestPermission === 'function') {
-    DeviceMotionEvent.requestPermission()
-      .then(s => {
-        if (s === 'granted') {
-          window.addEventListener('devicemotion', handleMotion);
-          stxt.textContent = '校正中，請靜止…';
-        } else {
-          sdot.className   = 'sdot error';
-          stxt.textContent = '未獲得感應器權限';
-        }
-      }).catch(() => {
-        sdot.className   = 'sdot error';
-        stxt.textContent = '啟動失敗';
-      });
-  } else {
-    window.addEventListener('devicemotion', handleMotion);
-    stxt.textContent = '校正中，請靜止…';
-  }
+if (typeof DeviceMotionEvent === ‘undefined’) {
+sdot.className = ‘sdot error’;
+stxt.textContent = ‘不支援感應器’;
+return;
+}
+if (typeof DeviceMotionEvent.requestPermission === ‘function’) {
+DeviceMotionEvent.requestPermission()
+.then(s => {
+if (s === ‘granted’) {
+window.addEventListener(‘devicemotion’, handleMotion);
+stxt.textContent = ‘校正中，請靜止…’;
+} else {
+sdot.className   = ‘sdot error’;
+stxt.textContent = ‘未獲得感應器權限’;
+}
+}).catch(() => {
+sdot.className   = ‘sdot error’;
+stxt.textContent = ‘啟動失敗’;
+});
+} else {
+window.addEventListener(‘devicemotion’, handleMotion);
+stxt.textContent = ‘校正中，請靜止…’;
+}
 }
 
 // 自動啟動（非 iOS）或等待點擊（iOS）
 (function init() {
-  if (typeof DeviceMotionEvent !== 'undefined' &&
-      typeof DeviceMotionEvent.requestPermission === 'function') {
-    // iOS: 等使用者點擊
-    btnMain.className     = 'btn-main ready';
-    btnLabel.textContent  = '點擊啟用感應器';
-    btnSub.textContent    = 'iOS 需要手動授權';
-  } else {
-    startMotion();
-  }
+if (typeof DeviceMotionEvent !== ‘undefined’ &&
+typeof DeviceMotionEvent.requestPermission === ‘function’) {
+// iOS: 等使用者點擊
+btnMain.className     = ‘btn-main ready’;
+btnLabel.textContent  = ‘點擊啟用感應器’;
+btnSub.textContent    = ‘iOS 需要手動授權’;
+} else {
+startMotion();
+}
 })();
 </script>
+
 </body>
 </html>
