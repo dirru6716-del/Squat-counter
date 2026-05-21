@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>深蹲計數器</title>
+<title>深蹲錄製器</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@300;400;700&display=swap');
   :root {
@@ -15,465 +15,282 @@
   body{
     background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;
     min-height:100dvh;display:flex;flex-direction:column;align-items:center;
-    justify-content:space-between;padding:28px 20px 24px;overflow:hidden;
+    justify-content:space-between;padding:40px 24px 36px;
     user-select:none;-webkit-user-select:none;
   }
   body::before{
     content:'';position:fixed;inset:0;pointer-events:none;
-    background-image:linear-gradient(rgba(200,245,66,0.03) 1px,transparent 1px),
+    background-image:
+      linear-gradient(rgba(200,245,66,0.03) 1px,transparent 1px),
       linear-gradient(90deg,rgba(200,245,66,0.03) 1px,transparent 1px);
     background-size:40px 40px;
   }
 
-  /* Header */
   .header{text-align:center;z-index:1}
   .header h1{
-    font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,7vw,32px);
+    font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,8vw,36px);
     letter-spacing:6px;color:var(--accent);text-shadow:0 0 20px var(--glow);
   }
-  .header p{font-size:10px;letter-spacing:2px;color:var(--muted);margin-top:2px;text-transform:uppercase}
+  .header p{font-size:10px;letter-spacing:2px;color:var(--muted);margin-top:4px;text-transform:uppercase}
 
-  /* Counter row */
-  .counter-row{display:flex;align-items:center;justify-content:center;gap:20px;z-index:1}
-  .ring-wrap{position:relative;width:150px;height:150px;flex-shrink:0}
-  .ring-svg{position:absolute;inset:0;transform:rotate(-90deg)}
-  .ring-bg{fill:none;stroke:var(--surface);stroke-width:5}
-  .ring-progress{
-    fill:none;stroke:var(--accent);stroke-width:5;stroke-linecap:round;
-    stroke-dasharray:440;stroke-dashoffset:440;
-    transition:stroke-dashoffset .5s cubic-bezier(.4,0,.2,1);
-    filter:drop-shadow(0 0 5px var(--accent));
+  /* ── 即時儀表板 ── */
+  .dashboard{
+    display:flex;flex-direction:column;align-items:center;gap:16px;z-index:1;width:100%;
   }
-  .ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-  .count-display{
-    font-family:'Bebas Neue',sans-serif;font-size:72px;line-height:1;
-    color:var(--text);letter-spacing:-2px;text-shadow:0 0 24px rgba(200,245,66,.3);
+
+  /* 大數字：已錄製時間 */
+  .timer-big{
+    font-family:'Bebas Neue',sans-serif;font-size:88px;line-height:1;
+    color:var(--text);letter-spacing:-2px;text-align:center;
+    text-shadow:0 0 30px rgba(200,245,66,.2);
   }
-  .count-label{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
-  @keyframes pulse-count{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:scale(1)}}
-  .count-display.pop{animation:pulse-count .3s ease}
+  .timer-big.rec{color:var(--danger);text-shadow:0 0 30px rgba(255,77,109,.3)}
+  .timer-lbl{font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:-8px}
 
-  /* Timer cards */
-  .timer-cards{display:flex;flex-direction:column;gap:8px}
-  .timer-card{
-    background:var(--surface);border:1px solid #222235;border-radius:10px;
-    padding:8px 14px;min-width:110px;text-align:center;transition:border-color .25s,box-shadow .25s;
+  /* 感應器即時顯示 */
+  .sensor-panel{
+    display:flex;gap:12px;width:100%;max-width:340px;
   }
-  .timer-card.ph-desc {border-color:var(--danger);box-shadow:0 0 12px rgba(255,77,109,.2)}
-  .timer-card.ph-hold {border-color:var(--warn);box-shadow:0 0 12px rgba(245,164,66,.2)}
-  .timer-val{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:1px;color:var(--muted);transition:color .25s}
-  .timer-card.ph-desc .timer-val{color:var(--danger)}
-  .timer-card.ph-hold .timer-val{color:var(--warn)}
-  .timer-card.done-d .timer-val{color:var(--danger);opacity:.6}
-  .timer-card.done-h .timer-val{color:var(--warn);opacity:.6}
-  .timer-lbl{font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:1px}
+  .sensor-box{
+    flex:1;background:var(--surface);border:1px solid #222235;
+    border-radius:12px;padding:10px 12px;text-align:center;
+    transition:border-color .2s,box-shadow .2s;
+  }
+  .sensor-box.active-up   {border-color:var(--accent); box-shadow:0 0 12px rgba(200,245,66,.2)}
+  .sensor-box.active-down {border-color:var(--danger);  box-shadow:0 0 12px rgba(255,77,109,.2)}
+  .sensor-box.active-still{border-color:var(--warn);    box-shadow:0 0 12px rgba(245,164,66,.15)}
+  .sensor-val{
+    font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1px;
+    color:var(--muted);transition:color .15s;
+  }
+  .sensor-box.active-up    .sensor-val{color:var(--accent)}
+  .sensor-box.active-down  .sensor-val{color:var(--danger)}
+  .sensor-box.active-still .sensor-val{color:var(--warn)}
+  .sensor-lbl{font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:2px}
 
-  /* Phase steps */
-  .phase-row{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:1}
-  .phase-steps{display:flex;gap:4px;align-items:center}
-  .phase-step{display:flex;flex-direction:column;align-items:center;gap:3px}
-  .phase-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:background .2s,box-shadow .2s}
-  .phase-dot.pd-desc{background:var(--danger);box-shadow:0 0 8px var(--danger)}
-  .phase-dot.pd-hold{background:var(--warn);box-shadow:0 0 8px var(--warn)}
-  .phase-dot.pd-rise{background:var(--accent);box-shadow:0 0 8px var(--accent)}
-  .phase-lbl{font-size:8px;letter-spacing:1px;color:var(--muted)}
-  .phase-line{width:16px;height:1px;background:#222235;margin-bottom:11px}
-  .phase-text{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+  /* 垂直加速度 bar */
+  .bar-wrap{
+    display:flex;flex-direction:row;align-items:center;gap:8px;
+  }
+  .bar-arrows{
+    display:flex;flex-direction:column;justify-content:space-between;
+    align-items:center;height:120px;font-size:11px;
+  }
+  .bar-track{
+    width:16px;height:120px;background:var(--surface);border-radius:8px;
+    overflow:hidden;position:relative;border:1px solid #222235;
+  }
+  .bar-track::after{
+    content:'';position:absolute;top:50%;left:0;
+    width:100%;height:1px;background:#333350;
+  }
+  .bar-fill{
+    position:absolute;left:0;width:100%;height:0%;border-radius:8px;
+    transition:height .04s,top .04s,background .1s;
+  }
+  .bar-lbl{
+    font-size:8px;letter-spacing:2px;color:var(--muted);
+    text-transform:uppercase;writing-mode:vertical-rl;
+  }
 
-  /* Big button */
-  .btn-wrap{z-index:1;width:100%;display:flex;justify-content:center}
+  /* 幀數計數 */
+  .frame-count{
+    font-size:11px;letter-spacing:1px;color:var(--muted);
+  }
+
+  /* ── 大按鍵 ── */
   .btn-main{
-    width:min(280px,90vw);height:86px;border-radius:22px;border:2px solid #333350;
-    background:var(--surface);color:var(--muted);
-    font-family:'Noto Sans TC',sans-serif;font-size:16px;letter-spacing:4px;
-    cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-    position:relative;overflow:hidden;
+    width:min(300px,90vw);height:90px;border-radius:24px;
+    border:2px solid #333350;background:var(--surface);
+    color:var(--muted);font-family:'Noto Sans TC',sans-serif;
+    font-size:18px;letter-spacing:4px;cursor:pointer;
+    transition:all .15s;-webkit-tap-highlight-color:transparent;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    z-index:1;
   }
-  .btn-main::after{
-    content:'';position:absolute;inset:0;
-    background:radial-gradient(circle at center,rgba(255,255,255,.08) 0%,transparent 70%);
-    opacity:0;transition:opacity .1s;
+  .btn-main.ready{
+    border-color:var(--accent);color:var(--accent);
+    box-shadow:0 0 24px rgba(200,245,66,.2);
   }
-  .btn-main:active::after{opacity:1}
-  .btn-main.st-idle{border-color:var(--accent);color:var(--accent);box-shadow:0 0 20px rgba(200,245,66,.15)}
-  .btn-main.st-desc{border-color:var(--danger);color:var(--danger);box-shadow:0 0 20px rgba(255,77,109,.2);background:rgba(255,77,109,.05)}
-  .btn-main.st-hold{border-color:var(--warn);color:var(--warn);box-shadow:0 0 20px rgba(245,164,66,.2);background:rgba(245,164,66,.05)}
-  .btn-hint{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+  .btn-main.recording{
+    border-color:var(--danger);color:var(--danger);
+    background:rgba(255,77,109,.06);
+    box-shadow:0 0 24px rgba(255,77,109,.3);
+  }
+  .btn-main.has-data{
+    border-color:var(--accent2);color:var(--accent2);
+    box-shadow:0 0 24px rgba(66,245,164,.2);
+  }
+  .btn-sub{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+  .rec-dot{
+    width:10px;height:10px;border-radius:50%;
+    background:var(--danger);display:inline-block;margin-right:6px;
+    animation:blink .8s ease-in-out infinite;
+  }
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-  /* Min-hold slider */
-  .slider-wrap{z-index:1;width:min(280px,90vw);display:flex;flex-direction:column;gap:4px}
-  .slider-row{display:flex;justify-content:space-between;align-items:center}
-  .slider-lbl{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
-  .slider-val{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--warn);letter-spacing:1px}
-  .slider-hint{display:flex;justify-content:space-between}
-  .slider-hint span{font-size:8px;letter-spacing:1px;color:var(--muted)}
-  input[type=range].sl{
-    -webkit-appearance:none;width:100%;height:4px;border-radius:2px;
-    background:var(--surface);outline:none;border:1px solid #222235;
+  /* ── 下載 ── */
+  .btn-dl{
+    width:min(300px,90vw);padding:14px;border-radius:16px;
+    border:1.5px solid var(--accent2);background:rgba(66,245,164,.06);
+    color:var(--accent2);font-family:'Noto Sans TC',sans-serif;
+    font-size:14px;letter-spacing:3px;cursor:pointer;
+    transition:all .15s;-webkit-tap-highlight-color:transparent;
+    z-index:1;display:none;
   }
-  input[type=range].sl::-webkit-slider-thumb{
-    -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
-    background:var(--warn);box-shadow:0 0 8px rgba(245,164,66,.4);cursor:pointer;
-    transition:transform .1s;
-  }
-  input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.3)}
+  .btn-dl:active{background:rgba(66,245,164,.15)}
 
-  /* Stats */
-  .stats{display:flex;gap:10px;z-index:1}
-  .stat-box{
-    background:var(--surface);border:1px solid #222235;border-radius:10px;
-    padding:8px 12px;text-align:center;min-width:64px;
-  }
-  .stat-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:1px}
-  .stat-lbl{font-size:7px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:1px}
-
-  /* Bottom */
-  .bottom-row{display:flex;gap:10px;z-index:1;align-items:center}
+  /* ── 狀態 ── */
   .status-row{
     display:flex;align-items:center;gap:8px;background:var(--surface);
-    border:1px solid #222235;border-radius:20px;padding:6px 14px;
+    border:1px solid #222235;border-radius:20px;padding:7px 16px;z-index:1;
   }
-  .status-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:background .3s,box-shadow .3s}
-  .status-dot.ready{background:var(--accent2);box-shadow:0 0 8px var(--accent2);animation:blink 1.6s ease-in-out infinite}
-  .status-dot.error{background:var(--danger);box-shadow:0 0 8px var(--danger)}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-  .status-text{font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase}
-
-  .btn-reset{
-    background:transparent;border:1px solid #2a2a3a;color:var(--muted);
-    font-family:'Noto Sans TC',sans-serif;font-size:11px;letter-spacing:3px;
-    padding:9px 28px;border-radius:40px;cursor:pointer;
-    transition:border-color .2s,color .2s,background .2s;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .btn-reset:active{border-color:var(--danger);color:var(--danger);background:rgba(255,77,109,.06)}
-
-  /* Record button */
-  .btn-rec{
-    background:transparent;border:1.5px solid #333350;color:var(--muted);
-    font-family:'Noto Sans TC',sans-serif;font-size:10px;letter-spacing:2px;
-    padding:9px 16px;border-radius:40px;cursor:pointer;transition:all .2s;
-    -webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:6px;
-  }
-  .rec-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:background .2s}
-  .btn-rec.recording{border-color:var(--danger);color:var(--danger);background:rgba(255,77,109,.06)}
-  .btn-rec.recording .rec-dot{background:var(--danger);animation:blink .8s ease-in-out infinite}
-  .btn-rec.has-data{border-color:var(--accent2);color:var(--accent2)}
-
-  .flash{
-    position:fixed;inset:0;background:rgba(200,245,66,.07);
-    pointer-events:none;opacity:0;transition:opacity .08s;z-index:99;
-  }
-  .flash.show{opacity:1}
+  .sdot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:background .3s,box-shadow .3s}
+  .sdot.ready{background:var(--accent2);box-shadow:0 0 8px var(--accent2);animation:blink 1.6s ease-in-out infinite}
+  .sdot.error{background:var(--danger);box-shadow:0 0 8px var(--danger)}
+  .stxt{font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>深蹲計數器</h1>
-  <p>Squat Counter · Auto Detect</p>
+  <h1>深蹲錄製器</h1>
+  <p>Squat Recorder · Pure Sensor Log</p>
 </div>
 
-<!-- 計數 + 計時 -->
-<div class="counter-row">
-  <div class="ring-wrap">
-    <svg class="ring-svg" viewBox="0 0 150 150">
-      <circle class="ring-bg" cx="75" cy="75" r="70"/>
-      <circle class="ring-progress" id="ring" cx="75" cy="75" r="70"/>
-    </svg>
-    <div class="ring-inner">
-      <div class="count-display" id="count">0</div>
-      <div class="count-label">次</div>
-    </div>
-  </div>
-  <div class="timer-cards">
-    <div class="timer-card" id="card-d">
-      <div class="timer-val" id="t-desc">0.0</div>
-      <div class="timer-lbl">↓ 蹲下時間</div>
-    </div>
-    <div class="timer-card" id="card-h">
-      <div class="timer-val" id="t-hold">0.0</div>
-      <div class="timer-lbl">⏸ 維持時間</div>
-    </div>
-  </div>
-</div>
+<!-- 儀表板 -->
+<div class="dashboard">
 
-<!-- 四階段指示 -->
-<div class="phase-row">
-  <div class="phase-steps">
-    <div class="phase-step"><div class="phase-dot" id="pd0"></div><div class="phase-lbl">蹲下</div></div>
-    <div class="phase-line"></div>
-    <div class="phase-step"><div class="phase-dot" id="pd1"></div><div class="phase-lbl">底部</div></div>
-    <div class="phase-line"></div>
-    <div class="phase-step"><div class="phase-dot" id="pd2"></div><div class="phase-lbl">起立</div></div>
-    <div class="phase-line"></div>
-    <div class="phase-step"><div class="phase-dot" id="pd3"></div><div class="phase-lbl">完成</div></div>
+  <!-- 錄製計時 -->
+  <div>
+    <div class="timer-big" id="timer">0.0</div>
+    <div class="timer-lbl" id="timer-lbl">尚未開始錄製</div>
   </div>
-  <div class="phase-text" id="phase-text">準備好後按下方按鍵</div>
+
+  <!-- 感應器數值 + 垂直 bar -->
+  <div style="display:flex;align-items:center;gap:16px">
+    <!-- 數值面板 -->
+    <div class="sensor-panel" style="flex-direction:column;width:160px">
+      <div class="sensor-box" id="box-mag">
+        <div class="sensor-val" id="val-mag">0.00</div>
+        <div class="sensor-lbl">dynMag（動態大小）</div>
+      </div>
+      <div class="sensor-box" id="box-up">
+        <div class="sensor-val" id="val-up">0.00</div>
+        <div class="sensor-lbl">dynUp（上下方向）</div>
+      </div>
+    </div>
+
+    <!-- 垂直 bar -->
+    <div class="bar-wrap">
+      <div class="bar-arrows">
+        <span style="color:var(--accent)">↑</span>
+        <span style="color:var(--danger)">↓</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" id="bar-fill"></div>
+      </div>
+      <div class="bar-lbl">dynUp</div>
+    </div>
+  </div>
+
+  <!-- 幀數 -->
+  <div class="frame-count" id="frame-count">已記錄 0 幀</div>
+
 </div>
 
 <!-- 大按鍵 -->
-<div class="btn-wrap">
-  <button class="btn-main st-idle" id="btn-main">
-    <span id="btn-label">開始深蹲</span>
-    <span class="btn-hint" id="btn-hint">按下開始計時</span>
-  </button>
-</div>
+<button class="btn-main" id="btn-main">
+  <span id="btn-label">點擊畫面啟用感應器</span>
+  <span class="btn-sub" id="btn-sub">等待感應器就緒</span>
+</button>
 
-<!-- 最短維持時間滑桿 -->
-<div class="slider-wrap">
-  <div class="slider-row">
-    <span class="slider-lbl">最短維持時間</span>
-    <span class="slider-val" id="hold-val">0.8s</span>
-  </div>
-  <input type="range" class="sl" id="hold-slider" min="0.3" max="3.0" step="0.1" value="0.8">
-  <div class="slider-hint">
-    <span>0.3s（快速）</span>
-    <span>3.0s（離心控制）</span>
-  </div>
-</div>
+<!-- 下載 -->
+<button class="btn-dl" id="btn-dl">↓ 下載 CSV</button>
 
-<!-- 統計 -->
-<div class="stats">
-  <div class="stat-box"><div class="stat-val" id="best">0</div><div class="stat-lbl">最高紀錄</div></div>
-  <div class="stat-box"><div class="stat-val" id="session">0</div><div class="stat-lbl">本次組數</div></div>
-  <div class="stat-box"><div class="stat-val" id="avg-d">-</div><div class="stat-lbl">均蹲下s</div></div>
-  <div class="stat-box"><div class="stat-val" id="avg-h">-</div><div class="stat-lbl">均維持s</div></div>
+<!-- 狀態 -->
+<div class="status-row">
+  <div class="sdot" id="sdot"></div>
+  <div class="stxt" id="stxt">請點擊畫面啟用感應器</div>
 </div>
-
-<!-- 底部工具列 -->
-<div class="bottom-row">
-  <div class="status-row">
-    <div class="status-dot" id="sdot"></div>
-    <div class="status-text" id="stxt">點擊畫面啟用感應器</div>
-  </div>
-  <button class="btn-rec" id="btn-rec">
-    <span class="rec-dot"></span><span id="rec-lbl">錄製</span>
-  </button>
-  <button class="btn-rec has-data" id="btn-dl" style="display:none">↓ CSV</button>
-</div>
-<button class="btn-reset" id="btn-reset">歸　零</button>
-
-<div class="flash" id="flash"></div>
 
 <script>
-// ══════════════════════════════════════════════════════════════
-//  狀態機：四階段全感應器自動偵測
-//
-//  idle
-//   ↓ 按鍵
-//  descending（蹲下計時）
-//   ↓ 【靜止條件】dynMag < STILL_MAG AND |dynUp| < STILL_UP
-//     持續 STILL_DUR + 已蹲下 > MIN_DOWN
-//  holding（維持計時）
-//   ↓ 【起立條件】dynMag > RISE_MAG 持續 RISE_DUR（不管方向）
-//     + 已維持 > MIN_HOLD
-//     → 自動計數 ✅
-//     OR
-//   ↓ 【手動備用】按鍵第二下（感應器沒偵測到時用）
-//     → 計數 ✅
-//   → 回到 descending（連續動作，不停留 idle）
-//     OR 回到 idle（按鍵停止）
-//
-//  設計重點：
-//  - 起立不用 dynUp 方向，只用 dynMag 爬升（根據資料分析更可靠）
-//  - 連續動作：計數後直接回 descending，不需停下
-//  - 按鍵始終是備用，感應器偵測到就自動觸發
-// ══════════════════════════════════════════════════════════════
-
-// ── 感應器參數（根據資料分析得出）──────────────────────────
-const LP         = 0.85;   // 低通濾波係數（分離重力）
-
-const STILL_MAG  = 0.30;   // 靜止判定：dynMag 門檻
-const STILL_UP   = 0.30;   // 靜止判定：|dynUp| 門檻
-const STILL_DUR  = 0.50;   // 靜止持續時間（秒）→ 確認到底
-
-const RISE_MAG   = 0.50;   // 起立判定：dynMag 爬升門檻
-const RISE_DUR   = 0.40;   // 起立持續時間（秒）→ 確認起立
-
-const MIN_DOWN   = 1.20;   // 最短蹲下時間（防誤觸）
-
-let   MIN_HOLD   = 0.80;   // 最短維持時間（可由滑桿調整）
-const COOLDOWN   = 600;    // 計數後冷卻（ms）
-
-// ── 狀態 ──────────────────────────────────────────────────────
-let phase     = 'idle';   // idle | descending | holding | rising | standing
-let locked    = false;
-let warmup    = 0;
-const WARMUP  = 25;
-
+// ── 感應器 ────────────────────────────────────────────────────
+const LP = 0.85;
 let gravX = 0, gravY = 0, gravZ = 0;
+let warmup = 0;
+const WARMUP = 25;
+let sensorReady = false;
 
-// 連續模式：計數後自動回 descending
-let autoReturn = false;
-
-// 計時
-let descStart  = 0;
-let holdStart  = 0;
-let rafId      = null;
-
-// 靜止 / 起立偵測計數器
-let stillCount = 0;
-let riseCount  = 0;
-
-// ── 統計 ──────────────────────────────────────────────────────
-let count     = 0;
-let session   = 0;
-let best      = parseInt(localStorage.getItem('squat_best') || '0');
-let repCount  = 0, totalD = 0, totalH = 0;
-
-// ── 錄製 ──────────────────────────────────────────────────────
+// ── 錄製狀態 ──────────────────────────────────────────────────
 let isRec     = false;
 let logData   = [];
 let recStart  = 0;
+let rafId     = null;
 
 // ── DOM ───────────────────────────────────────────────────────
-const countEl  = document.getElementById('count');
-const ringEl   = document.getElementById('ring');
-const flashEl  = document.getElementById('flash');
-const sdot     = document.getElementById('sdot');
-const stxt     = document.getElementById('stxt');
-const bestEl   = document.getElementById('best');
-const sessionEl= document.getElementById('session');
-const avgDEl   = document.getElementById('avg-d');
-const avgHEl   = document.getElementById('avg-h');
-const ptxt     = document.getElementById('phase-text');
-const pd       = [0,1,2,3].map(i => document.getElementById('pd'+i));
-const cardD    = document.getElementById('card-d');
-const cardH    = document.getElementById('card-h');
-const tDesc    = document.getElementById('t-desc');
-const tHold    = document.getElementById('t-hold');
-const btnMain  = document.getElementById('btn-main');
-const btnLabel = document.getElementById('btn-label');
-const btnHint  = document.getElementById('btn-hint');
+const timerEl    = document.getElementById('timer');
+const timerLbl   = document.getElementById('timer-lbl');
+const valMag     = document.getElementById('val-mag');
+const valUp      = document.getElementById('val-up');
+const boxMag     = document.getElementById('box-mag');
+const boxUp      = document.getElementById('box-up');
+const barFill    = document.getElementById('bar-fill');
+const frameCnt   = document.getElementById('frame-count');
+const btnMain    = document.getElementById('btn-main');
+const btnLabel   = document.getElementById('btn-label');
+const btnSub     = document.getElementById('btn-sub');
+const btnDl      = document.getElementById('btn-dl');
+const sdot       = document.getElementById('sdot');
+const stxt       = document.getElementById('stxt');
 
-bestEl.textContent = best;
-
-// ── Ring ──────────────────────────────────────────────────────
-// r=70 → circumference ≈ 440
-function updateRing() {
-  ringEl.style.strokeDashoffset = 440 * (1 - (count % 10) / 10);
-}
-
-// ── Flash ──────────────────────────────────────────────────────
-function flashScreen() {
-  flashEl.classList.add('show');
-  setTimeout(() => flashEl.classList.remove('show'), 120);
-}
-
-// ── Count ──────────────────────────────────────────────────────
-function addCount(dSec, hSec) {
-  count++; session++;
-  if (count > best) {
-    best = count;
-    localStorage.setItem('squat_best', best);
-    bestEl.textContent = best;
-  }
-  countEl.textContent   = count;
-  sessionEl.textContent = session;
-  repCount++;
-  totalD += dSec; totalH += hSec;
-  avgDEl.textContent = (totalD / repCount).toFixed(1);
-  avgHEl.textContent = (totalH / repCount).toFixed(1);
-  updateRing();
-  flashScreen();
-  countEl.classList.remove('pop');
-  void countEl.offsetWidth;
-  countEl.classList.add('pop');
-}
-
-// ── Phase UI ───────────────────────────────────────────────────
-const P_CLASSES = ['pd-desc','pd-hold','pd-rise','pd-rise'];
-function setPhaseUI(p) {
-  pd.forEach(d => d.className = 'phase-dot');
-  if      (p === 'descending') { pd[0].classList.add('pd-desc'); ptxt.textContent = '↓ 蹲下中'; }
-  else if (p === 'holding')    { pd[1].classList.add('pd-hold'); ptxt.textContent = '⏸ 底部維持'; }
-  else if (p === 'rising')     { pd[2].classList.add('pd-rise'); ptxt.textContent = '↑ 起立中'; }
-  else if (p === 'standing')   { pd[3].classList.add('pd-rise'); ptxt.textContent = '🧍 完全站立'; }
-  else if (p === 'done')       { pd[3].classList.add('pd-rise'); ptxt.textContent = '✓ 完成，繼續'; }
-  else                         { ptxt.textContent = '準備好後按下方按鍵'; }
-}
-
-// ── Button UI ─────────────────────────────────────────────────
-function setBtnUI(p) {
-  btnMain.className = 'btn-main';
-  if (p === 'idle') {
-    btnMain.classList.add('st-idle');
-    btnLabel.textContent = '開始深蹲';
-    btnHint.textContent  = '按下開始計時';
-  } else if (p === 'descending') {
-    btnMain.classList.add('st-desc');
-    btnLabel.textContent = '手動完成';
-    btnHint.textContent  = '到底後感應器自動偵測';
-  } else if (p === 'holding') {
-    btnMain.classList.add('st-hold');
-    btnLabel.textContent = '手動計數';
-    btnHint.textContent  = '起立時感應器自動偵測';
-  }
-}
-
-// ── Timer RAF ──────────────────────────────────────────────────
-function startRAF() {
+// ── 計時 RAF ──────────────────────────────────────────────────
+function startTimerRAF() {
   if (rafId) cancelAnimationFrame(rafId);
   function tick() {
-    const now = performance.now();
-    if (phase === 'descending') {
-      tDesc.textContent = ((now - descStart) / 1000).toFixed(1);
-    } else if (phase === 'holding') {
-      tHold.textContent = ((now - holdStart) / 1000).toFixed(1);
+    if (isRec) {
+      const elapsed = (performance.now() - recStart) / 1000;
+      timerEl.textContent = elapsed.toFixed(1);
     }
     rafId = requestAnimationFrame(tick);
   }
   rafId = requestAnimationFrame(tick);
 }
-function stopRAF() {
+function stopTimerRAF() {
   if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
 }
 
-// ── 完成一下 ───────────────────────────────────────────────────
-function finishRep() {
-  if (phase !== 'holding' && phase !== 'descending') return;
-  stopRAF();
-  const now    = performance.now();
-  const dSec   = ((holdStart || now) - descStart) / 1000;
-  const hSec   = holdStart ? (now - holdStart) / 1000 : 0;
-
-  tDesc.textContent = dSec.toFixed(1);
-  tHold.textContent = hSec.toFixed(1);
-  cardD.className   = 'timer-card done-d';
-  cardH.className   = 'timer-card done-h';
-
-  addCount(dSec, hSec);
-  phase = 'rising';        // ← 起立中（log 用）
-  setPhaseUI('done');
-  setBtnUI('descending');
-
-  locked = true;
-  stillCount = 0;
-  riseCount  = 0;
-
-  // 300ms 後切到 standing，再 300ms 後回 descending
-  setTimeout(() => {
-    phase = 'standing';    // ← 完全站立（log 用）
-  }, 300);
-
-  // 冷卻後自動回到 descending 等待下一下
-  setTimeout(() => {
-    locked    = false;
-    phase     = 'descending';
-    descStart = performance.now();
-    holdStart = 0;
-    tDesc.textContent = '0.0';
-    tHold.textContent = '0.0';
-    cardD.className   = 'timer-card ph-desc';
-    cardH.className   = 'timer-card';
-    setPhaseUI('descending');
-    startRAF();
-  }, COOLDOWN);
+// ── 垂直 bar ──────────────────────────────────────────────────
+function updateBar(dynUp) {
+  const pct = Math.min(Math.abs(dynUp) / 3.0, 1) * 46;
+  if (dynUp >= 0) {
+    barFill.style.top        = (50 - pct) + '%';
+    barFill.style.height     = pct + '%';
+    barFill.style.background = 'var(--accent)';
+  } else {
+    barFill.style.top        = '50%';
+    barFill.style.height     = pct + '%';
+    barFill.style.background = 'var(--danger)';
+  }
 }
 
-// ── 感應器主邏輯 ────────────────────────────────────────────────
+// ── 感應器色彩回饋 ────────────────────────────────────────────
+function updateSensorUI(dynMag, dynUp) {
+  valMag.textContent = dynMag.toFixed(2);
+  valUp.textContent  = (dynUp >= 0 ? '+' : '') + dynUp.toFixed(2);
+
+  // dynMag 顏色
+  boxMag.className = 'sensor-box' +
+    (dynMag > 0.5 ? ' active-up' : dynMag < 0.3 ? ' active-still' : '');
+
+  // dynUp 方向顏色
+  boxUp.className = 'sensor-box' +
+    (dynUp > 0.3 ? ' active-up' : dynUp < -0.3 ? ' active-down' : ' active-still');
+
+  updateBar(dynUp);
+}
+
+// ── DeviceMotion handler ──────────────────────────────────────
 function handleMotion(e) {
   const acc = e.accelerationIncludingGravity;
   if (!acc || acc.x === null) return;
@@ -485,12 +302,18 @@ function handleMotion(e) {
 
   // 暖機
   warmup++;
-  if (warmup < WARMUP) { stxt.textContent = `校正中 ${warmup}/${WARMUP}`; return; }
-  if (warmup === WARMUP) { sdot.className = 'status-dot ready'; stxt.textContent = '感應器就緒'; }
-
-  if (phase !== 'descending' && phase !== 'holding' &&
-      phase !== 'rising'     && phase !== 'standing') return;
-  if (locked && phase !== 'rising' && phase !== 'standing') return;
+  if (warmup < WARMUP) {
+    stxt.textContent = `校正中 ${warmup}/${WARMUP}`;
+    return;
+  }
+  if (warmup === WARMUP) {
+    sensorReady = true;
+    sdot.className  = 'sdot ready';
+    stxt.textContent = '感應器就緒，可以開始錄製';
+    btnMain.className = 'btn-main ready';
+    btnLabel.textContent = '開始錄製';
+    btnSub.textContent   = '按下後開始連續深蹲';
+  }
 
   // 動態加速度
   const dX = acc.x - gravX, dY = acc.y - gravY, dZ = acc.z - gravZ;
@@ -498,173 +321,113 @@ function handleMotion(e) {
   const gMag   = Math.sqrt(gravX*gravX + gravY*gravY + gravZ*gravZ) || 9.8;
   const dynUp  = -(dX*gravX + dY*gravY + dZ*gravZ) / gMag;
 
-  const now = performance.now();
+  // 即時 UI 更新（不管有沒有在錄製都顯示）
+  updateSensorUI(dynMag, dynUp);
 
   // 錄製
   if (isRec) {
-    logData.push({
-      t:      ((now - recStart) / 1000).toFixed(3),
-      accX:   acc.x.toFixed(4), accY: acc.y.toFixed(4), accZ: acc.z.toFixed(4),
-      gX:     gravX.toFixed(4), gY:   gravY.toFixed(4), gZ:   gravZ.toFixed(4),
-      dynMag: dynMag.toFixed(4), dynUp: dynUp.toFixed(4),
-      phase
-    });
-  }
-
-  // ── descending：等待靜止（到底了）────────────────────────────
-  if (phase === 'descending') {
-    const isStill = dynMag < STILL_MAG && Math.abs(dynUp) < STILL_UP;
-    if (isStill) {
-      stillCount++;
-      const dur = stillCount * 0.016; // 約 16ms/frame
-      if (dur >= STILL_DUR && (now - descStart) >= MIN_DOWN * 1000) {
-        // → 切換到 holding
-        holdStart = now;
-        phase = 'holding';
-        stillCount = 0;
-        riseCount  = 0;
-        tDesc.textContent = ((holdStart - descStart) / 1000).toFixed(1);
-        cardD.className   = 'timer-card done-d';
-        cardH.className   = 'timer-card ph-hold';
-        setPhaseUI('holding');
-        setBtnUI('holding');
-      }
-    } else {
-      stillCount = 0;
-    }
-  }
-
-  // ── holding：等待起立（dynMag 爬升）───────────────────────────
-  else if (phase === 'holding') {
-    // 起立偵測：dynMag > RISE_MAG 持續 RISE_DUR（不依賴方向，只靠大小）
-    // 根據資料分析：起立時 dynMag 從 <0.3 爬升到 >0.5 持續 >0.4s
-    // holding 中段偶爾有 spike，但連續 0.4s 超過 0.5 的誤觸率為 0%
-    if (dynMag > RISE_MAG) {
-      riseCount++;
-      const dur = riseCount * 0.016;
-      if (dur >= RISE_DUR && (now - holdStart) >= MIN_HOLD * 1000) {
-        setPhaseUI('rising');
-        finishRep();
-      }
-    } else {
-      riseCount = 0;
-    }
+    const now = performance.now();
+    logData.push([
+      ((now - recStart) / 1000).toFixed(3),
+      acc.x.toFixed(4), acc.y.toFixed(4), acc.z.toFixed(4),
+      gravX.toFixed(4), gravY.toFixed(4), gravZ.toFixed(4),
+      dynMag.toFixed(4), dynUp.toFixed(4)
+    ]);
+    frameCnt.textContent = `已記錄 ${logData.length} 幀`;
   }
 }
 
-// ── 大按鍵 ────────────────────────────────────────────────────
+// ── 按鍵邏輯 ─────────────────────────────────────────────────
 btnMain.addEventListener('click', () => {
-  if (phase === 'idle') {
-    // 第一下：開始
-    phase     = 'descending';
-    descStart = performance.now();
-    holdStart = 0;
-    stillCount = riseCount = 0;
-    tDesc.textContent = '0.0';
-    tHold.textContent = '0.0';
-    cardD.className   = 'timer-card ph-desc';
-    cardH.className   = 'timer-card';
-    setPhaseUI('descending');
-    setBtnUI('descending');
-    startRAF();
-
-  } else if (phase === 'descending' || phase === 'holding') {
-    // 手動備用：感應器沒偵測到時按此
-    if (!locked) finishRep();
-
-  } else if (phase === 'done' || locked) {
-    // 做完一下、冷卻中 → 長按可停止（變回 idle）
-    stopRAF();
-    locked    = false;
-    phase     = 'idle';
-    holdStart = 0;
-    stillCount = riseCount = 0;
-    cardD.className   = 'timer-card';
-    cardH.className   = 'timer-card';
-    setPhaseUI('idle');
-    setBtnUI('idle');
+  if (!sensorReady) {
+    startMotion();
+    return;
   }
-});
 
-// ── 滑桿 ──────────────────────────────────────────────────────
-const holdSlider = document.getElementById('hold-slider');
-const holdValEl  = document.getElementById('hold-val');
-holdSlider.addEventListener('input', () => {
-  MIN_HOLD = parseFloat(holdSlider.value);
-  holdValEl.textContent = MIN_HOLD.toFixed(1) + 's';
-});
-
-// ── 錄製 ──────────────────────────────────────────────────────
-const btnRec = document.getElementById('btn-rec');
-const btnDl  = document.getElementById('btn-dl');
-const recLbl = document.getElementById('rec-lbl');
-
-btnRec.addEventListener('click', e => {
-  e.stopPropagation();
   if (!isRec) {
-    isRec = true; logData = []; recStart = performance.now();
-    btnRec.classList.add('recording'); recLbl.textContent = '停止';
-    btnDl.style.display = 'none';
+    // 開始錄製
+    isRec   = true;
+    logData = [];
+    recStart = performance.now();
+
+    btnMain.className     = 'btn-main recording';
+    btnLabel.innerHTML    = '<span class="rec-dot"></span>錄製中';
+    btnSub.textContent    = '做完後按停止';
+    timerEl.classList.add('rec');
+    timerLbl.textContent  = '錄製中';
+    btnDl.style.display   = 'none';
+    frameCnt.textContent  = '已記錄 0 幀';
+    startTimerRAF();
+
   } else {
+    // 停止錄製
     isRec = false;
-    btnRec.classList.remove('recording'); recLbl.textContent = '錄製';
-    if (logData.length > 0) btnDl.style.display = '';
+    stopTimerRAF();
+
+    const dur = ((performance.now() - recStart) / 1000).toFixed(1);
+    timerEl.classList.remove('rec');
+    timerLbl.textContent  = `錄製完成 · ${logData.length} 幀`;
+
+    btnMain.className     = 'btn-main has-data';
+    btnLabel.textContent  = '重新錄製';
+    btnSub.textContent    = '按下清除並重新開始';
+
+    if (logData.length > 0) {
+      btnDl.style.display = '';
+    }
   }
 });
-btnDl.addEventListener('click', e => {
-  e.stopPropagation();
-  const hdr = 'time_s,accX,accY,accZ,gravX,gravY,gravZ,dynMag,dynUp,phase\n';
-  const rows = logData.map(r =>
-    `${r.t},${r.accX},${r.accY},${r.accZ},${r.gX},${r.gY},${r.gZ},${r.dynMag},${r.dynUp},${r.phase}`
-  ).join('\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([hdr+rows], {type:'text/csv'}));
-  a.download = `squat_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
+
+// ── 下載 CSV ──────────────────────────────────────────────────
+btnDl.addEventListener('click', () => {
+  if (logData.length === 0) return;
+  const hdr  = 'time_s,accX,accY,accZ,gravX,gravY,gravZ,dynMag,dynUp\n';
+  const rows = logData.map(r => r.join(',')).join('\n');
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(new Blob([hdr + rows], {type:'text/csv'}));
+  a.download = `squat_raw_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
   a.click();
 });
 
-// ── 感應器請求 ────────────────────────────────────────────────
+// ── 請求感應器 ────────────────────────────────────────────────
 function startMotion() {
   if (typeof DeviceMotionEvent === 'undefined') {
-    sdot.className = 'status-dot error'; stxt.textContent = '不支援感應器'; return;
+    sdot.className = 'sdot error';
+    stxt.textContent = '不支援感應器';
+    return;
   }
   if (typeof DeviceMotionEvent.requestPermission === 'function') {
     DeviceMotionEvent.requestPermission()
       .then(s => {
-        if (s === 'granted') { window.addEventListener('devicemotion', handleMotion); stxt.textContent = '校正中，請靜止…'; }
-        else { sdot.className = 'status-dot error'; stxt.textContent = '未獲得感應器權限'; }
-      }).catch(() => { sdot.className = 'status-dot error'; stxt.textContent = '啟動失敗'; });
+        if (s === 'granted') {
+          window.addEventListener('devicemotion', handleMotion);
+          stxt.textContent = '校正中，請靜止…';
+        } else {
+          sdot.className   = 'sdot error';
+          stxt.textContent = '未獲得感應器權限';
+        }
+      }).catch(() => {
+        sdot.className   = 'sdot error';
+        stxt.textContent = '啟動失敗';
+      });
   } else {
     window.addEventListener('devicemotion', handleMotion);
     stxt.textContent = '校正中，請靜止…';
   }
 }
+
+// 自動啟動（非 iOS）或等待點擊（iOS）
 (function init() {
   if (typeof DeviceMotionEvent !== 'undefined' &&
       typeof DeviceMotionEvent.requestPermission === 'function') {
-    stxt.textContent = '點擊畫面開始';
-    document.addEventListener('click', function once() {
-      document.removeEventListener('click', once); startMotion();
-    }, { once: true });
-  } else { startMotion(); }
+    // iOS: 等使用者點擊
+    btnMain.className     = 'btn-main ready';
+    btnLabel.textContent  = '點擊啟用感應器';
+    btnSub.textContent    = 'iOS 需要手動授權';
+  } else {
+    startMotion();
+  }
 })();
-
-// ── Reset ─────────────────────────────────────────────────────
-document.getElementById('btn-reset').addEventListener('click', e => {
-  e.stopPropagation();
-  stopRAF();
-  count = session = repCount = warmup = 0;
-  totalD = totalH = 0;
-  gravX = gravY = gravZ = 0;
-  phase = 'idle'; locked = false; holdStart = 0;
-  stillCount = riseCount = 0;
-  countEl.textContent = '0'; sessionEl.textContent = '0';
-  avgDEl.textContent = '-'; avgHEl.textContent = '-';
-  tDesc.textContent = '0.0'; tHold.textContent = '0.0';
-  updateRing(); setPhaseUI('idle'); setBtnUI('idle');
-  cardD.className = 'timer-card'; cardH.className = 'timer-card';
-  sdot.className = 'status-dot'; stxt.textContent = '校正中，請靜止…';
-});
 </script>
 </body>
 </html>
