@@ -351,8 +351,24 @@ function handleMotion(e) {
 
 // ── 按鍵邏輯 ─────────────────────────────────────────────────
 btnMain.addEventListener('click', () => {
+  // iOS: 第一次點擊直接請求權限
   if (!sensorReady) {
-    startMotion();
+    if (typeof DeviceMotionEvent !== 'undefined' &&
+        typeof DeviceMotionEvent.requestPermission === 'function') {
+      DeviceMotionEvent.requestPermission()
+        .then(s => {
+          if (s === 'granted') {
+            window.addEventListener('devicemotion', handleMotion);
+            stxt.textContent = '校正中，請靜止…';
+          } else {
+            sdot.className   = 'sdot error';
+            stxt.textContent = '未獲得感應器權限';
+          }
+        }).catch(() => {
+          sdot.className   = 'sdot error';
+          stxt.textContent = '啟動失敗';
+        });
+    }
     return;
   }
 
@@ -481,11 +497,13 @@ stxt.textContent = ‘校正中，請靜止…’;
 (function init() {
 if (typeof DeviceMotionEvent !== ‘undefined’ &&
 typeof DeviceMotionEvent.requestPermission === ‘function’) {
-// iOS: 等使用者點擊
-btnMain.className     = ‘btn-main ready’;
-btnLabel.textContent  = ‘點擊啟用感應器’;
-btnSub.textContent    = ‘iOS 需要手動授權’;
+// iOS: 等使用者點擊按鍵才能請求權限
+btnMain.className    = ‘btn-main ready’;
+btnLabel.textContent = ‘點擊授權感應器’;
+btnSub.textContent   = ‘iOS 需要手動授權’;
+stxt.textContent     = ‘請點擊上方按鍵授權’;
 } else {
+// 非 iOS: 直接啟動
 startMotion();
 }
 })();
