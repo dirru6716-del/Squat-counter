@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -32,115 +33,150 @@ h1{
 /* 計數大圈 */
 .ring-wrap{ position:relative; width:160px; height:160px; flex-shrink:0; z-index:1; }
 .ring-svg { position:absolute; inset:0; transform:rotate(-90deg); }
-.ring-bg  { fill:none; stroke:var(--surface); stroke-width:6; }
+.ring-bg  { fill:none; stroke:var(–surface); stroke-width:6; }
 .ring-prog{
-  fill:none; stroke:var(--accent); stroke-width:6; stroke-linecap:round;
-  stroke-dasharray:440; stroke-dashoffset:440;
-  transition:stroke-dashoffset .4s cubic-bezier(.4,0,.2,1);
-  filter:drop-shadow(0 0 6px var(--accent));
+fill:none; stroke:var(–accent); stroke-width:6; stroke-linecap:round;
+stroke-dasharray:440; stroke-dashoffset:440;
+transition:stroke-dashoffset .4s cubic-bezier(.4,0,.2,1);
+filter:drop-shadow(0 0 6px var(–accent));
 }
 .ring-inner{
-  position:absolute; inset:0;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
+position:absolute; inset:0;
+display:flex; flex-direction:column; align-items:center; justify-content:center;
 }
 .count-num{
-  font-family:'Bebas Neue',sans-serif; font-size:76px; line-height:1;
-  color:var(--text); letter-spacing:-2px;
+font-family:‘Bebas Neue’,sans-serif; font-size:76px; line-height:1;
+color:var(–text); letter-spacing:-2px;
 }
-.count-lbl{ font-size:9px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
+.count-lbl{ font-size:9px; letter-spacing:3px; color:var(–muted); text-transform:uppercase; }
 @keyframes pop{ 0%{transform:scale(1)} 40%{transform:scale(1.15)} 100%{transform:scale(1)} }
 .count-num.pop{ animation:pop .25s ease; }
 
 /* 狀態文字 */
 .phase-txt{
-  font-size:13px; letter-spacing:2px; color:var(--muted);
-  text-transform:uppercase; z-index:1; min-height:20px;
+font-size:13px; letter-spacing:2px; color:var(–muted);
+text-transform:uppercase; z-index:1; min-height:20px;
 }
-.phase-txt.active{ color:var(--accent2); }
-.phase-txt.counted{ color:var(--accent); }
+.phase-txt.active{ color:var(–accent2); }
+.phase-txt.counted{ color:var(–accent); }
 
 /* 計時卡 */
 .timer-row{ display:flex; gap:10px; z-index:1; }
 .tcard{
-  background:var(--surface); border:1px solid #222235;
-  border-radius:10px; padding:8px 16px; text-align:center; min-width:100px;
-  transition:border-color .2s, box-shadow .2s;
+background:var(–surface); border:1px solid #222235;
+border-radius:10px; padding:8px 16px; text-align:center; min-width:100px;
+transition:border-color .2s, box-shadow .2s;
 }
-.tcard.active-d{ border-color:var(--danger); box-shadow:0 0 10px rgba(255,77,109,.2); }
-.tcard.done-d  { border-color:var(--danger); opacity:.6; }
-.tcard.done-h  { border-color:var(--warn);   opacity:.6; }
+.tcard.active-d{ border-color:var(–danger); box-shadow:0 0 10px rgba(255,77,109,.2); }
+.tcard.done-d  { border-color:var(–danger); opacity:.6; }
+.tcard.done-h  { border-color:var(–warn);   opacity:.6; }
 .tval{
-  font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--muted);
-  transition:color .2s;
+font-family:‘Bebas Neue’,sans-serif; font-size:32px; color:var(–muted);
+transition:color .2s;
 }
-.tcard.active-d .tval{ color:var(--danger); }
-.tlbl{ font-size:8px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
+.tcard.active-d .tval{ color:var(–danger); }
+.tlbl{ font-size:8px; letter-spacing:2px; color:var(–muted); text-transform:uppercase; }
 
 /* 大按鍵 */
 .btn-main{
-  width:min(300px,90vw); min-height:84px; border-radius:22px;
-  border:2px solid var(--accent); background:rgba(200,245,66,.05);
-  color:var(--accent); font-family:'Noto Sans TC',sans-serif;
-  font-size:18px; letter-spacing:4px; cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
-  display:flex; flex-direction:column; align-items:center;
-  justify-content:center; gap:4px; padding:12px;
-  box-shadow:0 0 20px rgba(200,245,66,.15); z-index:1;
+width:min(300px,90vw); min-height:84px; border-radius:22px;
+border:2px solid var(–accent); background:rgba(200,245,66,.05);
+color:var(–accent); font-family:‘Noto Sans TC’,sans-serif;
+font-size:18px; letter-spacing:4px; cursor:pointer;
+-webkit-tap-highlight-color:transparent;
+display:flex; flex-direction:column; align-items:center;
+justify-content:center; gap:4px; padding:12px;
+box-shadow:0 0 20px rgba(200,245,66,.15); z-index:1;
 }
 .btn-main.going{
-  border-color:var(--danger); color:var(--danger);
-  background:rgba(255,77,109,.06); box-shadow:0 0 20px rgba(255,77,109,.2);
+border-color:var(–danger); color:var(–danger);
+background:rgba(255,77,109,.06); box-shadow:0 0 20px rgba(255,77,109,.2);
 }
 .btn-main.done{
-  border-color:var(--accent2); color:var(--accent2);
-  background:rgba(66,245,164,.06);
+border-color:var(–accent2); color:var(–accent2);
+background:rgba(66,245,164,.06);
 }
 .btn-main:active{ transform:scale(.97); }
-.btn-sub{ font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
+.btn-sub{ font-size:10px; letter-spacing:2px; color:var(–muted); text-transform:uppercase; }
 
 /* 統計 */
 .stats{ display:flex; gap:8px; z-index:1; }
 .stat-box{
-  background:var(--surface); border:1px solid #222235;
-  border-radius:10px; padding:6px 12px; text-align:center; min-width:60px;
+background:var(–surface); border:1px solid #222235;
+border-radius:10px; padding:6px 12px; text-align:center; min-width:60px;
 }
-.stat-val{ font-family:'Bebas Neue',sans-serif; font-size:20px; color:var(--accent); }
-.stat-lbl{ font-size:7px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
+.stat-val{ font-family:‘Bebas Neue’,sans-serif; font-size:20px; color:var(–accent); }
+.stat-lbl{ font-size:7px; letter-spacing:2px; color:var(–muted); text-transform:uppercase; }
 
 /* 底列 */
 .bottom-row{ display:flex; gap:8px; z-index:1; align-items:center; flex-wrap:wrap; justify-content:center; }
 .status-row{
-  display:flex; align-items:center; gap:7px; background:var(--surface);
-  border:1px solid #222235; border-radius:20px; padding:6px 14px;
+display:flex; align-items:center; gap:7px; background:var(–surface);
+border:1px solid #222235; border-radius:20px; padding:6px 14px;
 }
-.sdot{ width:7px; height:7px; border-radius:50%; background:var(--muted); transition:background .3s, box-shadow .3s; }
-.sdot.ready{ background:var(--accent2); box-shadow:0 0 8px var(--accent2); animation:blink 1.6s ease-in-out infinite; }
-.sdot.error{ background:var(--danger); box-shadow:0 0 8px var(--danger); }
+.sdot{ width:7px; height:7px; border-radius:50%; background:var(–muted); transition:background .3s, box-shadow .3s; }
+.sdot.ready{ background:var(–accent2); box-shadow:0 0 8px var(–accent2); animation:blink 1.6s ease-in-out infinite; }
+.sdot.error{ background:var(–danger); box-shadow:0 0 8px var(–danger); }
 @keyframes blink{ 0%,100%{opacity:1} 50%{opacity:.4} }
-.stxt{ font-size:10px; letter-spacing:1px; color:var(--muted); text-transform:uppercase; }
+.stxt{ font-size:10px; letter-spacing:1px; color:var(–muted); text-transform:uppercase; }
 
 .btn-small{
-  background:transparent; border:1px solid #2a2a3a; color:var(--muted);
-  font-family:'Noto Sans TC',sans-serif; font-size:10px; letter-spacing:2px;
-  padding:8px 16px; border-radius:40px; cursor:pointer;
-  -webkit-tap-highlight-color:transparent; transition:all .2s;
+background:transparent; border:1px solid #2a2a3a; color:var(–muted);
+font-family:‘Noto Sans TC’,sans-serif; font-size:10px; letter-spacing:2px;
+padding:8px 16px; border-radius:40px; cursor:pointer;
+-webkit-tap-highlight-color:transparent; transition:all .2s;
 }
-.btn-small:active{ border-color:var(--danger); color:var(--danger); }
-.btn-small.rec-on{ border-color:var(--danger); color:var(--danger); }
-.btn-small.has-data{ border-color:var(--accent2); color:var(--accent2); }
+.btn-small:active{ border-color:var(–danger); color:var(–danger); }
+.btn-small.rec-on{ border-color:var(–danger); color:var(–danger); }
+.btn-small.has-data{ border-color:var(–accent2); color:var(–accent2); }
+
+/* 暫停按鍵 */
+.btn-pause{
+width:min(300px,90vw); padding:14px; border-radius:14px;
+border:1.5px solid var(–warn); background:rgba(245,164,66,.06);
+color:var(–warn); font-family:‘Noto Sans TC’,sans-serif;
+font-size:15px; letter-spacing:4px; cursor:pointer;
+-webkit-tap-highlight-color:transparent; z-index:1;
+transition:all .15s;
+}
+.btn-pause:active{ transform:scale(.97); background:rgba(245,164,66,.15); }
+
+/* 休息區塊 */
+.rest-box{
+display:flex; flex-direction:column; align-items:center; gap:8px;
+background:var(–surface); border:1.5px solid var(–warn);
+border-radius:16px; padding:16px 32px; z-index:1;
+box-shadow:0 0 20px rgba(245,164,66,.2);
+}
+.rest-timer{
+font-family:‘Bebas Neue’,sans-serif; font-size:56px; line-height:1;
+color:var(–warn); letter-spacing:2px;
+text-shadow:0 0 16px rgba(245,164,66,.4);
+}
+.rest-lbl{ font-size:9px; letter-spacing:3px; color:var(–muted); text-transform:uppercase; }
+.btn-resume{
+margin-top:4px; padding:10px 28px; border-radius:40px;
+border:1.5px solid var(–accent); background:rgba(200,245,66,.08);
+color:var(–accent); font-family:‘Noto Sans TC’,sans-serif;
+font-size:13px; letter-spacing:3px; cursor:pointer;
+-webkit-tap-highlight-color:transparent; transition:all .15s;
+}
+.btn-resume:active{ background:rgba(200,245,66,.2); }
 
 .flash{
-  position:fixed; inset:0; background:rgba(200,245,66,.07);
-  pointer-events:none; opacity:0; transition:opacity .06s; z-index:99;
+position:fixed; inset:0; background:rgba(200,245,66,.07);
+pointer-events:none; opacity:0; transition:opacity .06s; z-index:99;
 }
 .flash.show{ opacity:1; }
 </style>
+
 </head>
 <body>
 
 <h1>深蹲計數器</h1>
 
 <!-- 計數圈 -->
+
 <div class="ring-wrap">
   <svg class="ring-svg" viewBox="0 0 160 160">
     <circle class="ring-bg"   cx="80" cy="80" r="70"/>
@@ -153,9 +189,11 @@ h1{
 </div>
 
 <!-- 狀態 -->
+
 <div class="phase-txt" id="phase-txt">準備好後按下方按鍵</div>
 
 <!-- 計時卡 -->
+
 <div class="timer-row">
   <div class="tcard" id="card-d">
     <div class="tval" id="t-desc">0.0</div>
@@ -168,19 +206,36 @@ h1{
 </div>
 
 <!-- 大按鍵 -->
+
 <button class="btn-main" id="btn-main">
   <span id="btn-label">開始深蹲</span>
   <span class="btn-sub" id="btn-sub">按下授權感應器並開始</span>
 </button>
 
 <!-- 統計 -->
+
 <div class="stats">
   <div class="stat-box"><div class="stat-val" id="best">0</div><div class="stat-lbl">最高</div></div>
   <div class="stat-box"><div class="stat-val" id="session">0</div><div class="stat-lbl">本組</div></div>
   <div class="stat-box"><div class="stat-val" id="avg-t">-</div><div class="stat-lbl">均週期s</div></div>
 </div>
 
+<!-- 暫停按鍵（going 時才顯示）-->
+
+<button class="btn-pause" id="btn-pause" style="display:none">
+  <span id="pause-label">⏸ 休息</span>
+</button>
+
+<!-- 休息計時（pause 時顯示）-->
+
+<div class="rest-box" id="rest-box" style="display:none">
+  <div class="rest-timer" id="rest-timer">0:00</div>
+  <div class="rest-lbl">休息中</div>
+  <button class="btn-resume" id="btn-resume">▶ 繼續深蹲</button>
+</div>
+
 <!-- 底列 -->
+
 <div class="bottom-row">
   <div class="status-row">
     <div class="sdot" id="sdot"></div>
@@ -207,7 +262,7 @@ var SMOOTH_N    = 10;     // 移動平均幀數
 var COOLDOWN    = 400;    // 計數後冷卻 ms
 
 // ── 狀態 ─────────────────────────────────────────────────────
-var step     = 'init';   // init | ready | going | locked
+var step     = 'init';   // init | ready | going | locked | paused
 var sensorOn = false;
 var warmup   = 0;
 var WARMUP   = 25;
@@ -217,6 +272,8 @@ var upBuf = [], magBuf = [];
 var negStart   = null;   // 開始蹲下的時間（秒）
 var lastCountT = -999;   // 上次計數時間（秒）
 var descStart  = 0;      // 本次開始的 performance.now()
+var restStart  = 0;      // 休息開始的 performance.now()
+var restRafId  = null;   // 休息計時 RAF
 
 var rafId = null;
 
@@ -252,8 +309,69 @@ var stxt       = document.getElementById('stxt');
 var btnRec     = document.getElementById('btn-rec');
 var btnDl      = document.getElementById('btn-dl');
 var btnReset   = document.getElementById('btn-reset');
+var btnPause   = document.getElementById('btn-pause');
+var btnResume  = document.getElementById('btn-resume');
+var restBox    = document.getElementById('rest-box');
+var restTimer  = document.getElementById('rest-timer');
 
 bestEl.textContent = best;
+
+// ── 休息計時 ─────────────────────────────────────────────────
+function startRestTimer(){
+  if(restRafId) cancelAnimationFrame(restRafId);
+  function tick(){
+    var sec = Math.floor((performance.now() - restStart) / 1000);
+    var m = Math.floor(sec / 60);
+    var s = sec % 60;
+    restTimer.textContent = m + ':' + String(s).padStart(2,'0');
+    restRafId = requestAnimationFrame(tick);
+  }
+  restRafId = requestAnimationFrame(tick);
+}
+function stopRestTimer(){
+  if(restRafId){ cancelAnimationFrame(restRafId); restRafId = null; }
+}
+
+// ── 進入休息 ─────────────────────────────────────────────────
+function enterPause(){
+  step = 'paused';
+  stopRAF();
+  negStart = null; upBuf = []; magBuf = [];
+  restStart = performance.now();
+  restTimer.textContent = '0:00';
+
+  btnPause.style.display  = 'none';
+  btnMain.style.display   = 'none';
+  restBox.style.display   = '';
+
+  phaseTxt.textContent = '⏸ 休息中';
+  phaseTxt.className   = 'phase-txt';
+  startRestTimer();
+}
+
+// ── 繼續深蹲 ─────────────────────────────────────────────────
+function exitPause(){
+  stopRestTimer();
+  step      = 'going';
+  descStart = performance.now();
+  lastCountT = performance.now() / 1000;  // 冷卻保護
+  negStart  = null; upBuf = []; magBuf = [];
+
+  restBox.style.display   = 'none';
+  btnMain.style.display   = '';
+  btnPause.style.display  = '';
+
+  tDesc.textContent = '0.0';
+  tHold.textContent = '-';
+  cardD.className   = 'tcard active-d';
+  cardH.className   = 'tcard';
+  phaseTxt.textContent = '↓ 蹲下中';
+  phaseTxt.className   = 'phase-txt active';
+  btnMain.className    = 'btn-main going';
+  btnLabel.textContent = '手動備用';
+  btnSub.textContent   = '感應器偵測不到時按此';
+  startRAF();
+}
 
 // ── 環形進度 ─────────────────────────────────────────────────
 function updateRing(){
@@ -434,6 +552,7 @@ btnMain.addEventListener('click', function(){
     if(!sensorOn) return;  // 還在校正中，等待
     step      = 'going';
     descStart = performance.now();
+    lastCountT = performance.now() / 1000;  // 開始後 MIN_CYCLE 秒內不計數
     negStart  = null;
     upBuf     = []; magBuf = [];
     tDesc.textContent = '0.0';
@@ -445,6 +564,7 @@ btnMain.addEventListener('click', function(){
     btnMain.className    = 'btn-main going';
     btnLabel.textContent = '手動備用';
     btnSub.textContent   = '感應器偵測不到時按此';
+    btnPause.style.display = '';   // 顯示暫停按鍵
     startRAF();
     return;
   }
@@ -520,9 +640,24 @@ btnDl.addEventListener('click', function(){
   URL.revokeObjectURL(url);
 });
 
+// ── 暫停按鍵 ─────────────────────────────────────────────────
+btnPause.addEventListener('click', function(){
+  if(step === 'going' || step === 'locked'){
+    enterPause();
+  }
+});
+
+// ── 繼續深蹲按鍵 ─────────────────────────────────────────────
+btnResume.addEventListener('click', function(){
+  if(step === 'paused'){
+    exitPause();
+  }
+});
+
 // ── 歸零 ─────────────────────────────────────────────────────
 btnReset.addEventListener('click', function(){
   stopRAF();
+  stopRestTimer();
   count = session = repCount = warmup = 0;
   totalT = 0;
   gravX = gravY = gravZ = 0;
@@ -539,8 +674,12 @@ btnReset.addEventListener('click', function(){
   phaseTxt.textContent = '準備好後按下方按鍵';
   phaseTxt.className   = 'phase-txt';
   btnMain.className    = 'btn-main';
+  btnMain.style.display = '';
   btnLabel.textContent = '開始深蹲';
   btnSub.textContent   = '按下開始計數';
+  btnPause.style.display = 'none';
+  restBox.style.display  = 'none';
+  restTimer.textContent  = '0:00';
   updateRing();
 });
 
@@ -555,5 +694,6 @@ if(typeof DeviceMotionEvent === 'undefined'){
 }
 // iOS 則等使用者點按鍵才請求
 </script>
+
 </body>
 </html>
