@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -26,149 +25,148 @@
     background-size:40px 40px;
   }
 
-/* Header */
-.header{text-align:center;z-index:1}
-.header h1{
-font-family:‘Bebas Neue’,sans-serif;font-size:clamp(24px,7vw,32px);
-letter-spacing:6px;color:var(–accent);text-shadow:0 0 20px var(–glow);
-}
-.header p{font-size:10px;letter-spacing:2px;color:var(–muted);margin-top:2px;text-transform:uppercase}
+  /* Header */
+  .header{text-align:center;z-index:1}
+  .header h1{
+    font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,7vw,32px);
+    letter-spacing:6px;color:var(--accent);text-shadow:0 0 20px var(--glow);
+  }
+  .header p{font-size:10px;letter-spacing:2px;color:var(--muted);margin-top:2px;text-transform:uppercase}
 
-/* Counter row */
-.counter-row{display:flex;align-items:center;justify-content:center;gap:20px;z-index:1}
-.ring-wrap{position:relative;width:150px;height:150px;flex-shrink:0}
-.ring-svg{position:absolute;inset:0;transform:rotate(-90deg)}
-.ring-bg{fill:none;stroke:var(–surface);stroke-width:5}
-.ring-progress{
-fill:none;stroke:var(–accent);stroke-width:5;stroke-linecap:round;
-stroke-dasharray:440;stroke-dashoffset:440;
-transition:stroke-dashoffset .5s cubic-bezier(.4,0,.2,1);
-filter:drop-shadow(0 0 5px var(–accent));
-}
-.ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.count-display{
-font-family:‘Bebas Neue’,sans-serif;font-size:72px;line-height:1;
-color:var(–text);letter-spacing:-2px;text-shadow:0 0 24px rgba(200,245,66,.3);
-}
-.count-label{font-size:9px;letter-spacing:3px;color:var(–muted);text-transform:uppercase}
-@keyframes pulse-count{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:scale(1)}}
-.count-display.pop{animation:pulse-count .3s ease}
+  /* Counter row */
+  .counter-row{display:flex;align-items:center;justify-content:center;gap:20px;z-index:1}
+  .ring-wrap{position:relative;width:150px;height:150px;flex-shrink:0}
+  .ring-svg{position:absolute;inset:0;transform:rotate(-90deg)}
+  .ring-bg{fill:none;stroke:var(--surface);stroke-width:5}
+  .ring-progress{
+    fill:none;stroke:var(--accent);stroke-width:5;stroke-linecap:round;
+    stroke-dasharray:440;stroke-dashoffset:440;
+    transition:stroke-dashoffset .5s cubic-bezier(.4,0,.2,1);
+    filter:drop-shadow(0 0 5px var(--accent));
+  }
+  .ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .count-display{
+    font-family:'Bebas Neue',sans-serif;font-size:72px;line-height:1;
+    color:var(--text);letter-spacing:-2px;text-shadow:0 0 24px rgba(200,245,66,.3);
+  }
+  .count-label{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+  @keyframes pulse-count{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .count-display.pop{animation:pulse-count .3s ease}
 
-/* Timer cards */
-.timer-cards{display:flex;flex-direction:column;gap:8px}
-.timer-card{
-background:var(–surface);border:1px solid #222235;border-radius:10px;
-padding:8px 14px;min-width:110px;text-align:center;transition:border-color .25s,box-shadow .25s;
-}
-.timer-card.ph-desc {border-color:var(–danger);box-shadow:0 0 12px rgba(255,77,109,.2)}
-.timer-card.ph-hold {border-color:var(–warn);box-shadow:0 0 12px rgba(245,164,66,.2)}
-.timer-val{font-family:‘Bebas Neue’,sans-serif;font-size:34px;letter-spacing:1px;color:var(–muted);transition:color .25s}
-.timer-card.ph-desc .timer-val{color:var(–danger)}
-.timer-card.ph-hold .timer-val{color:var(–warn)}
-.timer-card.done-d .timer-val{color:var(–danger);opacity:.6}
-.timer-card.done-h .timer-val{color:var(–warn);opacity:.6}
-.timer-lbl{font-size:8px;letter-spacing:2px;color:var(–muted);text-transform:uppercase;margin-top:1px}
+  /* Timer cards */
+  .timer-cards{display:flex;flex-direction:column;gap:8px}
+  .timer-card{
+    background:var(--surface);border:1px solid #222235;border-radius:10px;
+    padding:8px 14px;min-width:110px;text-align:center;transition:border-color .25s,box-shadow .25s;
+  }
+  .timer-card.ph-desc {border-color:var(--danger);box-shadow:0 0 12px rgba(255,77,109,.2)}
+  .timer-card.ph-hold {border-color:var(--warn);box-shadow:0 0 12px rgba(245,164,66,.2)}
+  .timer-val{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:1px;color:var(--muted);transition:color .25s}
+  .timer-card.ph-desc .timer-val{color:var(--danger)}
+  .timer-card.ph-hold .timer-val{color:var(--warn)}
+  .timer-card.done-d .timer-val{color:var(--danger);opacity:.6}
+  .timer-card.done-h .timer-val{color:var(--warn);opacity:.6}
+  .timer-lbl{font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:1px}
 
-/* Phase steps */
-.phase-row{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:1}
-.phase-steps{display:flex;gap:4px;align-items:center}
-.phase-step{display:flex;flex-direction:column;align-items:center;gap:3px}
-.phase-dot{width:8px;height:8px;border-radius:50%;background:var(–muted);transition:background .2s,box-shadow .2s}
-.phase-dot.pd-desc{background:var(–danger);box-shadow:0 0 8px var(–danger)}
-.phase-dot.pd-hold{background:var(–warn);box-shadow:0 0 8px var(–warn)}
-.phase-dot.pd-rise{background:var(–accent);box-shadow:0 0 8px var(–accent)}
-.phase-lbl{font-size:8px;letter-spacing:1px;color:var(–muted)}
-.phase-line{width:16px;height:1px;background:#222235;margin-bottom:11px}
-.phase-text{font-size:11px;letter-spacing:2px;color:var(–muted);text-transform:uppercase}
+  /* Phase steps */
+  .phase-row{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:1}
+  .phase-steps{display:flex;gap:4px;align-items:center}
+  .phase-step{display:flex;flex-direction:column;align-items:center;gap:3px}
+  .phase-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:background .2s,box-shadow .2s}
+  .phase-dot.pd-desc{background:var(--danger);box-shadow:0 0 8px var(--danger)}
+  .phase-dot.pd-hold{background:var(--warn);box-shadow:0 0 8px var(--warn)}
+  .phase-dot.pd-rise{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+  .phase-lbl{font-size:8px;letter-spacing:1px;color:var(--muted)}
+  .phase-line{width:16px;height:1px;background:#222235;margin-bottom:11px}
+  .phase-text{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
 
-/* Big button */
-.btn-wrap{z-index:1;width:100%;display:flex;justify-content:center}
-.btn-main{
-width:min(280px,90vw);height:86px;border-radius:22px;border:2px solid #333350;
-background:var(–surface);color:var(–muted);
-font-family:‘Noto Sans TC’,sans-serif;font-size:16px;letter-spacing:4px;
-cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;
-display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-position:relative;overflow:hidden;
-}
-.btn-main::after{
-content:’’;position:absolute;inset:0;
-background:radial-gradient(circle at center,rgba(255,255,255,.08) 0%,transparent 70%);
-opacity:0;transition:opacity .1s;
-}
-.btn-main:active::after{opacity:1}
-.btn-main.st-idle{border-color:var(–accent);color:var(–accent);box-shadow:0 0 20px rgba(200,245,66,.15)}
-.btn-main.st-desc{border-color:var(–danger);color:var(–danger);box-shadow:0 0 20px rgba(255,77,109,.2);background:rgba(255,77,109,.05)}
-.btn-main.st-hold{border-color:var(–warn);color:var(–warn);box-shadow:0 0 20px rgba(245,164,66,.2);background:rgba(245,164,66,.05)}
-.btn-hint{font-size:9px;letter-spacing:2px;color:var(–muted);text-transform:uppercase}
+  /* Big button */
+  .btn-wrap{z-index:1;width:100%;display:flex;justify-content:center}
+  .btn-main{
+    width:min(280px,90vw);height:86px;border-radius:22px;border:2px solid #333350;
+    background:var(--surface);color:var(--muted);
+    font-family:'Noto Sans TC',sans-serif;font-size:16px;letter-spacing:4px;
+    cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    position:relative;overflow:hidden;
+  }
+  .btn-main::after{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(circle at center,rgba(255,255,255,.08) 0%,transparent 70%);
+    opacity:0;transition:opacity .1s;
+  }
+  .btn-main:active::after{opacity:1}
+  .btn-main.st-idle{border-color:var(--accent);color:var(--accent);box-shadow:0 0 20px rgba(200,245,66,.15)}
+  .btn-main.st-desc{border-color:var(--danger);color:var(--danger);box-shadow:0 0 20px rgba(255,77,109,.2);background:rgba(255,77,109,.05)}
+  .btn-main.st-hold{border-color:var(--warn);color:var(--warn);box-shadow:0 0 20px rgba(245,164,66,.2);background:rgba(245,164,66,.05)}
+  .btn-hint{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
 
-/* Min-hold slider */
-.slider-wrap{z-index:1;width:min(280px,90vw);display:flex;flex-direction:column;gap:4px}
-.slider-row{display:flex;justify-content:space-between;align-items:center}
-.slider-lbl{font-size:9px;letter-spacing:2px;color:var(–muted);text-transform:uppercase}
-.slider-val{font-family:‘Bebas Neue’,sans-serif;font-size:17px;color:var(–warn);letter-spacing:1px}
-.slider-hint{display:flex;justify-content:space-between}
-.slider-hint span{font-size:8px;letter-spacing:1px;color:var(–muted)}
-input[type=range].sl{
--webkit-appearance:none;width:100%;height:4px;border-radius:2px;
-background:var(–surface);outline:none;border:1px solid #222235;
-}
-input[type=range].sl::-webkit-slider-thumb{
--webkit-appearance:none;width:18px;height:18px;border-radius:50%;
-background:var(–warn);box-shadow:0 0 8px rgba(245,164,66,.4);cursor:pointer;
-transition:transform .1s;
-}
-input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.3)}
+  /* Min-hold slider */
+  .slider-wrap{z-index:1;width:min(280px,90vw);display:flex;flex-direction:column;gap:4px}
+  .slider-row{display:flex;justify-content:space-between;align-items:center}
+  .slider-lbl{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+  .slider-val{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--warn);letter-spacing:1px}
+  .slider-hint{display:flex;justify-content:space-between}
+  .slider-hint span{font-size:8px;letter-spacing:1px;color:var(--muted)}
+  input[type=range].sl{
+    -webkit-appearance:none;width:100%;height:4px;border-radius:2px;
+    background:var(--surface);outline:none;border:1px solid #222235;
+  }
+  input[type=range].sl::-webkit-slider-thumb{
+    -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+    background:var(--warn);box-shadow:0 0 8px rgba(245,164,66,.4);cursor:pointer;
+    transition:transform .1s;
+  }
+  input[type=range].sl:active::-webkit-slider-thumb{transform:scale(1.3)}
 
-/* Stats */
-.stats{display:flex;gap:10px;z-index:1}
-.stat-box{
-background:var(–surface);border:1px solid #222235;border-radius:10px;
-padding:8px 12px;text-align:center;min-width:64px;
-}
-.stat-val{font-family:‘Bebas Neue’,sans-serif;font-size:22px;color:var(–accent);letter-spacing:1px}
-.stat-lbl{font-size:7px;letter-spacing:2px;color:var(–muted);text-transform:uppercase;margin-top:1px}
+  /* Stats */
+  .stats{display:flex;gap:10px;z-index:1}
+  .stat-box{
+    background:var(--surface);border:1px solid #222235;border-radius:10px;
+    padding:8px 12px;text-align:center;min-width:64px;
+  }
+  .stat-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:1px}
+  .stat-lbl{font-size:7px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:1px}
 
-/* Bottom */
-.bottom-row{display:flex;gap:10px;z-index:1;align-items:center}
-.status-row{
-display:flex;align-items:center;gap:8px;background:var(–surface);
-border:1px solid #222235;border-radius:20px;padding:6px 14px;
-}
-.status-dot{width:7px;height:7px;border-radius:50%;background:var(–muted);transition:background .3s,box-shadow .3s}
-.status-dot.ready{background:var(–accent2);box-shadow:0 0 8px var(–accent2);animation:blink 1.6s ease-in-out infinite}
-.status-dot.error{background:var(–danger);box-shadow:0 0 8px var(–danger)}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-.status-text{font-size:10px;letter-spacing:1.5px;color:var(–muted);text-transform:uppercase}
+  /* Bottom */
+  .bottom-row{display:flex;gap:10px;z-index:1;align-items:center}
+  .status-row{
+    display:flex;align-items:center;gap:8px;background:var(--surface);
+    border:1px solid #222235;border-radius:20px;padding:6px 14px;
+  }
+  .status-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:background .3s,box-shadow .3s}
+  .status-dot.ready{background:var(--accent2);box-shadow:0 0 8px var(--accent2);animation:blink 1.6s ease-in-out infinite}
+  .status-dot.error{background:var(--danger);box-shadow:0 0 8px var(--danger)}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+  .status-text{font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase}
 
-.btn-reset{
-background:transparent;border:1px solid #2a2a3a;color:var(–muted);
-font-family:‘Noto Sans TC’,sans-serif;font-size:11px;letter-spacing:3px;
-padding:9px 28px;border-radius:40px;cursor:pointer;
-transition:border-color .2s,color .2s,background .2s;
--webkit-tap-highlight-color:transparent;
-}
-.btn-reset:active{border-color:var(–danger);color:var(–danger);background:rgba(255,77,109,.06)}
+  .btn-reset{
+    background:transparent;border:1px solid #2a2a3a;color:var(--muted);
+    font-family:'Noto Sans TC',sans-serif;font-size:11px;letter-spacing:3px;
+    padding:9px 28px;border-radius:40px;cursor:pointer;
+    transition:border-color .2s,color .2s,background .2s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .btn-reset:active{border-color:var(--danger);color:var(--danger);background:rgba(255,77,109,.06)}
 
-/* Record button */
-.btn-rec{
-background:transparent;border:1.5px solid #333350;color:var(–muted);
-font-family:‘Noto Sans TC’,sans-serif;font-size:10px;letter-spacing:2px;
-padding:9px 16px;border-radius:40px;cursor:pointer;transition:all .2s;
--webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:6px;
-}
-.rec-dot{width:7px;height:7px;border-radius:50%;background:var(–muted);transition:background .2s}
-.btn-rec.recording{border-color:var(–danger);color:var(–danger);background:rgba(255,77,109,.06)}
-.btn-rec.recording .rec-dot{background:var(–danger);animation:blink .8s ease-in-out infinite}
-.btn-rec.has-data{border-color:var(–accent2);color:var(–accent2)}
+  /* Record button */
+  .btn-rec{
+    background:transparent;border:1.5px solid #333350;color:var(--muted);
+    font-family:'Noto Sans TC',sans-serif;font-size:10px;letter-spacing:2px;
+    padding:9px 16px;border-radius:40px;cursor:pointer;transition:all .2s;
+    -webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:6px;
+  }
+  .rec-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:background .2s}
+  .btn-rec.recording{border-color:var(--danger);color:var(--danger);background:rgba(255,77,109,.06)}
+  .btn-rec.recording .rec-dot{background:var(--danger);animation:blink .8s ease-in-out infinite}
+  .btn-rec.has-data{border-color:var(--accent2);color:var(--accent2)}
 
-.flash{
-position:fixed;inset:0;background:rgba(200,245,66,.07);
-pointer-events:none;opacity:0;transition:opacity .08s;z-index:99;
-}
-.flash.show{opacity:1}
+  .flash{
+    position:fixed;inset:0;background:rgba(200,245,66,.07);
+    pointer-events:none;opacity:0;transition:opacity .08s;z-index:99;
+  }
+  .flash.show{opacity:1}
 </style>
-
 </head>
 <body>
 
@@ -178,7 +176,6 @@ pointer-events:none;opacity:0;transition:opacity .08s;z-index:99;
 </div>
 
 <!-- 計數 + 計時 -->
-
 <div class="counter-row">
   <div class="ring-wrap">
     <svg class="ring-svg" viewBox="0 0 150 150">
@@ -203,7 +200,6 @@ pointer-events:none;opacity:0;transition:opacity .08s;z-index:99;
 </div>
 
 <!-- 四階段指示 -->
-
 <div class="phase-row">
   <div class="phase-steps">
     <div class="phase-step"><div class="phase-dot" id="pd0"></div><div class="phase-lbl">蹲下</div></div>
@@ -218,7 +214,6 @@ pointer-events:none;opacity:0;transition:opacity .08s;z-index:99;
 </div>
 
 <!-- 大按鍵 -->
-
 <div class="btn-wrap">
   <button class="btn-main st-idle" id="btn-main">
     <span id="btn-label">開始深蹲</span>
@@ -227,7 +222,6 @@ pointer-events:none;opacity:0;transition:opacity .08s;z-index:99;
 </div>
 
 <!-- 最短維持時間滑桿 -->
-
 <div class="slider-wrap">
   <div class="slider-row">
     <span class="slider-lbl">最短維持時間</span>
@@ -241,7 +235,6 @@ pointer-events:none;opacity:0;transition:opacity .08s;z-index:99;
 </div>
 
 <!-- 統計 -->
-
 <div class="stats">
   <div class="stat-box"><div class="stat-val" id="best">0</div><div class="stat-lbl">最高紀錄</div></div>
   <div class="stat-box"><div class="stat-val" id="session">0</div><div class="stat-lbl">本次組數</div></div>
@@ -250,7 +243,6 @@ pointer-events:none;opacity:0;transition:opacity .08s;z-index:99;
 </div>
 
 <!-- 底部工具列 -->
-
 <div class="bottom-row">
   <div class="status-row">
     <div class="status-dot" id="sdot"></div>
@@ -311,6 +303,7 @@ let warmup    = 0;
 const WARMUP  = 25;
 
 let gravX = 0, gravY = 0, gravZ = 0;
+let sensorOn = false;
 
 // 計時
 let descStart    = 0;
@@ -481,7 +474,7 @@ function handleMotion(e) {
   // 暖機
   warmup++;
   if (warmup < WARMUP) { stxt.textContent = `校正中 ${warmup}/${WARMUP}`; return; }
-  if (warmup === WARMUP) { sdot.className = 'status-dot ready'; stxt.textContent = '感應器就緒'; }
+  if (warmup === WARMUP) { sensorOn = true; sdot.className = 'status-dot ready'; stxt.textContent = '感應器就緒'; }
 
   if (phase !== 'descending') return;
   if (locked) return;
@@ -536,7 +529,14 @@ function handleMotion(e) {
 // ── 大按鍵 ────────────────────────────────────────────────────
 btnMain.addEventListener('click', () => {
   if (phase === 'idle') {
-    // 開始
+    // iOS：第一次按鍵時才在這裡直接呼叫 requestPermission
+    if (!sensorOn &&
+        typeof DeviceMotionEvent !== 'undefined' &&
+        typeof DeviceMotionEvent.requestPermission === 'function') {
+      startMotion();
+      return;
+    }
+    // 開始深蹲
     phase     = 'descending';
     descStart = performance.now();
     negStart  = null;
@@ -616,23 +616,27 @@ function startMotion() {
   if (typeof DeviceMotionEvent.requestPermission === 'function') {
     DeviceMotionEvent.requestPermission()
       .then(s => {
-        if (s === 'granted') { window.addEventListener('devicemotion', handleMotion); stxt.textContent = '校正中，請靜止…'; }
-        else { sdot.className = 'status-dot error'; stxt.textContent = '未獲得感應器權限'; }
+        if (s === 'granted') {
+          window.addEventListener('devicemotion', handleMotion);
+          stxt.textContent = '校正中，請靜止…';
+        } else {
+          sdot.className = 'status-dot error'; stxt.textContent = '未獲得感應器權限';
+        }
       }).catch(() => { sdot.className = 'status-dot error'; stxt.textContent = '啟動失敗'; });
   } else {
     window.addEventListener('devicemotion', handleMotion);
     stxt.textContent = '校正中，請靜止…';
   }
 }
-(function init() {
-  if (typeof DeviceMotionEvent !== 'undefined' &&
-      typeof DeviceMotionEvent.requestPermission === 'function') {
-    stxt.textContent = '點擊畫面開始';
-    document.addEventListener('click', function once() {
-      document.removeEventListener('click', once); startMotion();
-    }, { once: true });
-  } else { startMotion(); }
-})();
+
+// 初始提示
+if (typeof DeviceMotionEvent === 'undefined') {
+  sdot.className = 'status-dot error'; stxt.textContent = '不支援感應器';
+} else if (typeof DeviceMotionEvent.requestPermission === 'function') {
+  stxt.textContent = '點擊「開始深蹲」授權感應器';
+} else {
+  startMotion();  // 非 iOS 直接啟動
+}
 
 // ── Reset ─────────────────────────────────────────────────────
 document.getElementById('btn-reset').addEventListener('click', e => {
@@ -652,6 +656,5 @@ document.getElementById('btn-reset').addEventListener('click', e => {
   sdot.className = 'status-dot'; stxt.textContent = '校正中，請靜止…';
 });
 </script>
-
 </body>
 </html>
